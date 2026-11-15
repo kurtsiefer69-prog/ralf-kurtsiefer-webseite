@@ -100,7 +100,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <div class="mixer-head">
 <div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div><div class="section-kicker">Sechs gleichzeitig laufende Spuren</div><h2>Musik-Mischpult</h2></div></div>
 <div class="transport">
-<div class="transport-status"><span class="status-dot" id="statusDot"></span><span id="statusLabel">Bereit für Audiodateien</span></div>
+<div class="transport-status"><span class="status-dot" id="statusDot"></span><span id="statusLabel">Noch keine Musikdateien hinterlegt</span></div>
 <span class="time" id="clock" aria-label="Laufzeit">00:00</span>
 <button class="transport-btn" id="startAll" type="button">▶ Alles starten</button>
 <button class="transport-btn secondary" id="pauseAll" type="button" disabled>Ⅱ Pause</button>
@@ -112,7 +112,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <div class="fx-label"><div class="section-kicker">Separat abspielbar</div><h3>Soundeffekte</h3><span>Per Klick zusätzlich zur Musik</span></div>
 <div class="fx-buttons" id="fxButtons"></div>
 </div>
-<div class="helper"><span><span class="highlight">Audio laden:</span> Klicke pro Spur auf <b>＋</b>. MP3, WAV, OGG werden unterstützt.</span><span><span class="highlight">Wichtig:</span> Stop und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
+<div class="helper"><span><span class="highlight">Musikdateien:</span> Die Audiospuren und Effekte werden vom Seitenbetreiber fest hinterlegt – Besucher müssen nichts hochladen.</span><span><span class="highlight">Wichtig:</span> Stop, Solo und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
 </main>
 <footer class="music-links" aria-label="Ralf Kurtsiefer auf Musikplattformen">
 <span class="music-links-label">Mehr Musik entdecken</span>
@@ -128,18 +128,18 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <script>
 'use strict';
 const trackData=[
- {id:'atmo',category:'Atmo',title:'Tavernengeräusche',symbol:'♨',volume:73},
- {id:'drums',category:'Drums',title:'Trommeln & Rhythmus',symbol:'◉',volume:60},
- {id:'gitarre',category:'Gitarre',title:'Laute & Gitarre',symbol:'♬',volume:75},
- {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:68},
- {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:55},
- {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:47},
+ {id:'atmo',category:'Atmo',title:'Tavernengeräusche',symbol:'♨',volume:73,src:''},
+ {id:'drums',category:'Drums',title:'Trommeln & Rhythmus',symbol:'◉',volume:60,src:''},
+ {id:'gitarre',category:'Gitarre',title:'Laute & Gitarre',symbol:'♬',volume:75,src:''},
+ {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:68,src:''},
+ {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:55,src:''},
+ {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:47,src:''},
 ];
 const effects=[
- {id:'lachen',title:'Lachen',symbol:'☺'},
- {id:'applaus',title:'Applaus',symbol:'♧'},
- {id:'wuerfel',title:'Würfel',symbol:'⚄'},
- {id:'buh',title:'Buhrufe',symbol:'!'}
+ {id:'lachen',title:'Lachen',symbol:'☺',src:''},
+ {id:'applaus',title:'Applaus',symbol:'♧',src:''},
+ {id:'wuerfel',title:'Würfel',symbol:'⚄',src:''},
+ {id:'buh',title:'Buhrufe',symbol:'!',src:''}
 ];
 const tracks=trackData.map(x=>({...x,enabled:true,muted:false,solo:false,loop:true,buffer:null,source:null,gain:null}));
 const fx=effects.map(x=>({...x,buffer:null}));
@@ -153,28 +153,109 @@ function currentTime(){return started && ctx ? Math.max(0,ctx.currentTime-anchor
 function ensureCtx(){if(!ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C){toast('Dein Browser unterstützt Web Audio nicht.');return null;}ctx=new C();master=ctx.createGain();master.gain.value=.92;master.connect(ctx.destination);for(const t of tracks){t.gain=ctx.createGain();t.gain.connect(master);}updateGains();}return ctx;}
 function ensureFxCtx(){if(!fxCtx){const C=window.AudioContext||window.webkitAudioContext;fxCtx=new C();}return fxCtx;}
 function updateGains(){const soloed=tracks.some(t=>t.solo);for(const t of tracks){const level=(t.enabled&&!t.muted&&(!soloed||t.solo)) ? Math.pow(t.volume/100,1.6) : 0;if(t.gain&&ctx){t.gain.gain.setTargetAtTime(level,ctx.currentTime,.018);}updateTrackUI(t);}}
-function updateTrackUI(t){const row=document.getElementById('track-'+t.id);if(!row)return;const play=row.querySelector('.play'),stop=row.querySelector('.stop'),mute=row.querySelector('.mute'),solo=row.querySelector('.solo'),loop=row.querySelector('.loop');play.classList.toggle('active',t.enabled);stop.classList.toggle('active',!t.enabled);mute.classList.toggle('active',t.muted);solo.classList.toggle('active',t.solo);loop.classList.toggle('active',t.loop);play.setAttribute('aria-pressed',String(t.enabled));stop.setAttribute('aria-pressed',String(!t.enabled));mute.setAttribute('aria-pressed',String(t.muted));solo.setAttribute('aria-pressed',String(t.solo));loop.setAttribute('aria-pressed',String(t.loop));const title=row.querySelector('.track-title');title.textContent=t.filename||t.title;title.title=t.filename||t.title;const u=row.querySelector('.track-upload');u.title=t.buffer?'Andere Audiodatei wählen':'Audiodatei für '+t.category+' laden';}
+function updateTrackUI(t){const row=document.getElementById('track-'+t.id);if(!row)return;const play=row.querySelector('.play'),stop=row.querySelector('.stop'),mute=row.querySelector('.mute'),solo=row.querySelector('.solo'),loop=row.querySelector('.loop');play.classList.toggle('active',t.enabled);stop.classList.toggle('active',!t.enabled);mute.classList.toggle('active',t.muted);solo.classList.toggle('active',t.solo);loop.classList.toggle('active',t.loop);play.setAttribute('aria-pressed',String(t.enabled));stop.setAttribute('aria-pressed',String(!t.enabled));mute.setAttribute('aria-pressed',String(t.muted));solo.setAttribute('aria-pressed',String(t.solo));loop.setAttribute('aria-pressed',String(t.loop));const title=row.querySelector('.track-title');title.textContent=t.filename||t.title;title.title=t.filename||t.title;row.classList.toggle('has-audio',Boolean(t.buffer||t.src));}
 function sourceFor(t,when,at){if(!t.buffer||!t.gain||!ctx)return;if(t.source){const old=t.source;t.source=null;try{old.stop();}catch(e){}old.disconnect();}
  let offset=Math.max(0,at);if(t.loop)offset=offset%t.buffer.duration;else if(offset>=t.buffer.duration)return;
  const src=ctx.createBufferSource();src.buffer=t.buffer;src.loop=t.loop;src.connect(t.gain);t.source=src;
  src.onended=()=>{if(t.source===src){t.source=null;}};
  src.start(when,offset);
 }
-function renderTracks(){trackList.innerHTML=tracks.map(t=>`<div class="track mixer-grid" id="track-${t.id}"><div class="track-name"><span class="track-icon" aria-hidden="true">${t.symbol}</span><div class="track-details"><span class="track-category">${t.category}</span><span class="track-title">${t.title}</span></div><button class="track-upload" type="button" title="Audiodatei laden" aria-label="Audiodatei für ${t.category} laden">＋</button><input class="sr-only" type="file" accept="audio/*,.wav,.mp3,.ogg,.m4a" aria-label="Audiodatei für ${t.category} wählen" /></div><button type="button" class="control play active" title="Spur hörbar schalten (bleibt synchron)" aria-label="Play ${t.category}">▶</button><button type="button" class="control stop" title="Spur ausblenden, Zeitachse läuft weiter" aria-label="Stop ${t.category}">■</button><button type="button" class="control loop active" title="Loop an oder aus" aria-label="Loop ${t.category}">↻</button><button type="button" class="control mute" title="Stumm schalten" aria-label="Stumm ${t.category}">M</button><button type="button" class="control solo" title="Nur diese Spur hören" aria-label="Solo ${t.category}">S</button><label class="fader"><input type="range" min="0" max="100" step="1" value="${t.volume}" style="--fill:${t.volume}%" aria-label="Lautstärke ${t.category}"/><span class="volume-value">${t.volume}%</span></label></div>`).join('');
- for(const t of tracks){const r=document.getElementById('track-'+t.id);const fi=r.querySelector('input[type=file]');r.querySelector('.track-upload').onclick=()=>fi.click();fi.onchange=async()=>{const f=fi.files?.[0];if(!f)return;const context=ensureCtx();if(!context)return;const orig=r.querySelector('.track-title').textContent;r.querySelector('.track-title').textContent='Lade Audiodatei …';try{const bytes=await f.arrayBuffer();const decoded=await context.decodeAudioData(bytes);if(!decoded.duration)throw Error('Leere Audiodatei');t.buffer=decoded;t.filename=f.name;t.enabled=true;const at=context.currentTime+.04;if(started)sourceFor(t,at,currentTime()+.04);updateGains();toast(t.category+': '+f.name+' geladen');}catch(e){r.querySelector('.track-title').textContent=orig;toast('Audiodatei konnte nicht gelesen werden: '+f.name);console.warn(e);}finally{fi.value='';updateTrackUI(t);}};
- r.querySelector('.play').onclick=()=>{t.enabled=true;updateGains();if(!t.buffer)toast('Für '+t.category+' zuerst mit ＋ eine Audiodatei laden.');};
- r.querySelector('.stop').onclick=()=>{t.enabled=false;updateGains();};
- r.querySelector('.loop').onclick=()=>{t.loop=!t.loop;if(t.source)t.source.loop=t.loop;if(t.loop && started && t.buffer && !t.source)sourceFor(t,ctx.currentTime+.025,currentTime()+.025);updateGains();};
- r.querySelector('.mute').onclick=()=>{t.muted=!t.muted;updateGains();};
- r.querySelector('.solo').onclick=()=>{t.solo=!t.solo;updateGains();};
- r.querySelector('.fader input').oninput=e=>{t.volume=Number(e.target.value);e.target.style.setProperty('--fill',t.volume+'%');r.querySelector('.volume-value').textContent=t.volume+'%';updateGains();};
- }
+function loadConfiguredAudio(x, audioContext) {
+  if (x.buffer) return true;
+  if (!x.src) return false;
+  if (x.loading) return x.loading;
+  x.loading=(async()=>{
+    const response=await fetch(x.src);
+    if (!response.ok) throw new Error('HTTP '+response.status+': '+x.src);
+    const decoded=await audioContext.decodeAudioData(await response.arrayBuffer());
+    if (!decoded.duration) throw new Error('Leere Audiodatei');
+    x.buffer=decoded;
+    if ('category' in x) updateTrackUI(x);
+    return true;
+  })().catch(e=>{
+    console.warn('Audiodatei konnte nicht geladen werden',x.src,e);
+    toast('Audio für '+(x.category||x.title)+' konnte nicht geladen werden.');
+    return false;
+  }).finally(()=>{x.loading=null;});
+  return x.loading;
 }
-async function startAll(){if(!tracks.some(x=>x.buffer)){toast('Bitte zuerst Audiodateien mit ＋ laden. Danach laufen alle Spuren synchron.');return;}const c=ensureCtx();if(!c)return;try{await c.resume();if(!started){const when=c.currentTime+.08;anchor=when;for(const t of tracks)sourceFor(t,when,0);started=true;}else{for(const t of tracks){if(t.buffer&&!t.source&&(t.loop||currentTime()<t.buffer.duration))sourceFor(t,c.currentTime+.03,currentTime()+.03);}}playing=true;setStatus('Alle geladenen Spuren laufen');}catch(e){toast('Audio konnte nicht gestartet werden');console.warn(e);}}
+function renderTracks() {
+  trackList.innerHTML=tracks.map(t=>`<div class="track mixer-grid" id="track-${t.id}"><div class="track-name"><span class="track-icon" aria-hidden="true">${t.symbol}</span><div class="track-details"><span class="track-category">${t.category}</span><span class="track-title">${t.title}</span></div></div><button type="button" class="control play active" title="Spur hörbar schalten (bleibt synchron)" aria-label="Play ${t.category}">▶</button><button type="button" class="control stop" title="Spur ausblenden, Zeitachse läuft weiter" aria-label="Stop ${t.category}">■</button><button type="button" class="control loop active" title="Loop an oder aus" aria-label="Loop ${t.category}">↻</button><button type="button" class="control mute" title="Stumm schalten" aria-label="Stumm ${t.category}">M</button><button type="button" class="control solo" title="Nur diese Spur hören" aria-label="Solo ${t.category}">S</button><label class="fader"><input type="range" min="0" max="100" step="1" value="${t.volume}" style="--fill:${t.volume}%" aria-label="Lautstärke ${t.category}"/><span class="volume-value">${t.volume}%</span></label></div>`).join('');
+  for(const t of tracks){
+    const r=document.getElementById('track-'+t.id);
+    r.querySelector('.play').onclick=()=>{
+      t.enabled=true;updateGains();
+      if(!t.buffer&&!t.src)toast('Für '+t.category+' ist noch keine Audiodatei hinterlegt.');
+    };
+    r.querySelector('.stop').onclick=()=>{t.enabled=false;updateGains();};
+    r.querySelector('.loop').onclick=()=>{
+      t.loop=!t.loop;
+      if(t.source)t.source.loop=t.loop;
+      if(t.loop && started && t.buffer && !t.source)sourceFor(t,ctx.currentTime+.025,currentTime()+.025);
+      updateGains();
+    };
+    r.querySelector('.mute').onclick=()=>{t.muted=!t.muted;updateGains();};
+    r.querySelector('.solo').onclick=()=>{t.solo=!t.solo;updateGains();};
+    r.querySelector('.fader input').oninput=e=>{
+      t.volume=Number(e.target.value);
+      e.target.style.setProperty('--fill',t.volume+'%');
+      r.querySelector('.volume-value').textContent=t.volume+'%';
+      updateGains();
+    };
+  }
+}
+async function startAll() {
+  if(!tracks.some(x=>x.buffer||x.src)){
+    toast('Noch keine Audiodateien hinterlegt. Sie werden direkt in die Webseite eingebunden.');
+    return;
+  }
+  const c=ensureCtx();if(!c)return;
+  try{
+    await Promise.all(tracks.filter(x=>x.src&&!x.buffer).map(x=>loadConfiguredAudio(x,c)));
+    if(!tracks.some(x=>x.buffer)){
+      toast('Es konnten noch keine Audiodateien geladen werden.');return;
+    }
+    await c.resume();
+    if(!started){
+      const when=c.currentTime+.08;
+      anchor=when;
+      for(const t of tracks)sourceFor(t,when,0);
+      started=true;
+    }else{
+      for(const t of tracks){
+        if(t.buffer&&!t.source&&(t.loop||currentTime()<t.buffer.duration)){
+          sourceFor(t,c.currentTime+.03,currentTime()+.03);
+        }
+      }
+    }
+    playing=true;
+    setStatus('Alle hinterlegten Spuren laufen synchron');
+  }catch(e){toast('Audio konnte nicht gestartet werden');console.warn(e);}
+}
 async function pauseAll(){if(!ctx||!started)return;try{await ctx.suspend();playing=false;setStatus('Pausiert – Spuren bleiben synchron');}catch(e){console.warn(e);}}
-function renderFX(){fxButtons.innerHTML=fx.map(x=>`<div class="fx-item" id="fx-${x.id}"><button type="button" class="fx-trigger" title="Soundeffekt abspielen">${x.symbol} ${x.title}</button><button type="button" class="fx-upload" title="Audio für ${x.title} laden" aria-label="Audio für ${x.title} laden">＋</button><input type="file" class="sr-only" accept="audio/*,.wav,.mp3,.ogg,.m4a" aria-label="Soundeffekt ${x.title} wählen"/></div>`).join('');for(const x of fx){const row=document.getElementById('fx-'+x.id),fi=row.querySelector('input[type=file]');row.querySelector('.fx-upload').onclick=()=>fi.click();fi.onchange=async()=>{const file=fi.files?.[0];if(!file)return;try{const C=ensureFxCtx();x.buffer=await C.decodeAudioData(await file.arrayBuffer());row.querySelector('.fx-trigger').title=file.name;toast(x.title+': Sounddatei geladen');}catch(e){toast('Soundeffekt konnte nicht gelesen werden');}finally{fi.value='';}};row.querySelector('.fx-trigger').onclick=async()=>{if(!x.buffer){toast('Für '+x.title+' zuerst mit ＋ eine Sounddatei laden.');return;}try{const C=ensureFxCtx();await C.resume();const src=C.createBufferSource(),g=C.createGain();src.buffer=x.buffer;g.gain.value=.85;src.connect(g);g.connect(C.destination);src.start();src.onended=()=>{src.disconnect();g.disconnect();};}catch(e){toast('Soundeffekt konnte nicht abgespielt werden');}};}}
+function renderFX() {
+  fxButtons.innerHTML=fx.map(x=>`<div class="fx-item" id="fx-${x.id}"><button type="button" class="fx-trigger" title="Soundeffekt abspielen">${x.symbol} ${x.title}</button></div>`).join('');
+  for(const x of fx){
+    const row=document.getElementById('fx-'+x.id);
+    row.querySelector('.fx-trigger').onclick=async()=>{
+      if(!x.buffer&&!x.src){
+        toast('Für '+x.title+' ist noch kein Soundeffekt hinterlegt.');
+        return;
+      }
+      try{
+        const C=ensureFxCtx();
+        await C.resume();
+        if(!x.buffer && !(await loadConfiguredAudio(x,C)))return;
+        const src=C.createBufferSource(),g=C.createGain();
+        src.buffer=x.buffer;g.gain.value=.85;
+        src.connect(g);g.connect(C.destination);
+        src.start();src.onended=()=>{src.disconnect();g.disconnect();};
+      }catch(e){toast('Soundeffekt konnte nicht abgespielt werden');console.warn(e);}
+    };
+  }
+}
 function updateClock(){const s=Math.floor(currentTime());document.getElementById('clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-renderTracks();renderFX();setStatus('Bereit für Audiodateien');
+renderTracks();renderFX();setStatus('Noch keine Musikdateien hinterlegt');
 document.getElementById('startAll').onclick=startAll;document.getElementById('pauseAll').onclick=pauseAll;setInterval(updateClock,180);
 </script>
 </body></html>
