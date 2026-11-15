@@ -35,6 +35,14 @@ body { font-family: Georgia, 'Times New Roman', serif; }
  .nav-button .name { font-size:clamp(17px,4.5vw,26px); }
  .nav-button .subtitle { font-size:clamp(9px,2.4vw,13px); letter-spacing:.02em; }
 }
+
+/* Musikplattformen: gemeinsame Fußzeile auf allen Musikseiten */
+.artist-links{position:relative;z-index:20;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;width:100%;padding:16px 14px 20px;background:linear-gradient(180deg,rgba(7,9,10,.96),rgba(12,12,13,.98));border-top:1px solid #7f6746;color:#dfc795;font-family:Arial,sans-serif;text-align:center}
+.artist-links strong{font-size:11px;letter-spacing:.13em;text-transform:uppercase;margin-right:8px}
+.artist-links a{display:inline-flex;align-items:center;justify-content:center;min-height:37px;padding:9px 16px;background:#29231d;border:1px solid #7f6746;border-radius:5px;text-decoration:none;color:#f5dfbb;font-size:13px;font-weight:700}
+.artist-links a:hover,.artist-links a:focus-visible{background:#715333;border-color:#eac886;outline:1px solid #eac886}
+@media(max-width:600px){.artist-links{gap:8px;padding:14px 10px}.artist-links strong{width:100%;margin:0}.artist-links a{font-size:12px;padding:9px 12px;flex:1 1 40%}}
+
 </style>
 </head>
 <body>
@@ -48,5 +56,13 @@ body { font-family: Georgia, 'Times New Roman', serif; }
   </nav>
 </section>
 </main>
+
+<footer class="artist-links" aria-label="Ralf Kurtsiefer auf Musikplattformen">
+<strong>Mehr Musik entdecken</strong>
+<a href="https://www.youtube.com/channel/UCr-JvAvQ3gxXF43ayyDwDZA" target="_blank" rel="noopener noreferrer">YouTube</a>
+<a href="https://open.spotify.com/intl-de/artist/7jDLlbIjq23YGXpUodzecK?si=g7bUhN6VTYeiOQFx3n9YkQ" target="_blank" rel="noopener noreferrer">Spotify</a>
+<a href="https://music.apple.com/de/artist/ralf-kurtsiefer/1214976619" target="_blank" rel="noopener noreferrer">Apple Music</a>
+<a href="https://soundcloud.com/ralfkurtsiefer" target="_blank" rel="noopener noreferrer">SoundCloud</a>
+</footer>
 </body>
 </html>
