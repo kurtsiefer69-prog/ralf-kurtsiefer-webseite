@@ -85,6 +85,12 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 @media(max-width:1100px){.wrap{padding:19px 17px 25px}.mixer-grid{grid-template-columns:minmax(160px,2fr) 42px 42px 57px 49px 45px minmax(150px,1.8fr);gap:6px}.track,.column-head{padding-left:14px;padding-right:14px}.track-icon{display:none}.fx-panel{padding-left:15px;padding-right:15px}.fx-label{min-width:170px}}
 @media(max-width:760px){body{background-attachment:scroll;background-position:center top}.wrap{padding:15px 12px 23px;gap:15px}.topbar{align-items:start}.brand{text-align:right;font-size:9px}.hero{margin-top:25px}.hero-note{display:none}h1{font-size:50px}.workspace{border-radius:8px}.mixer-head{padding:15px 13px;flex-wrap:wrap}.transport{width:100%;justify-content:flex-start}.transport-status{margin-left:auto}.mixer-grid{grid-template-columns:minmax(116px,1.3fr) repeat(5,37px) minmax(72px,1fr);gap:4px}.column-head{padding:11px 9px 8px;font-size:8px;letter-spacing:0}.track{padding:9px 8px;min-height:67px}.track-name{gap:4px}.track-category{font-size:9px}.track-title{font-size:12px}.track-upload{width:22px;height:24px;font-size:12px}.control{font-size:11px;min-height:33px}.volume-value{min-width:0;font-size:9px}.fader{gap:5px}.fader input::-webkit-slider-thumb{height:14px;width:14px}.fx-panel{display:block;padding:16px 11px}.fx-label{margin-bottom:14px}.fx-buttons{gap:6px}.fx-trigger{font-size:11px}.fx-upload{width:24px}.helper{padding:12px;display:block}.helper span{display:block;margin-bottom:8px}}
 @media(max-width:480px){.brand{max-width:130px}.mixer-grid{grid-template-columns:minmax(82px,1fr) repeat(5,28px) minmax(54px,.8fr);gap:3px}.column-head{font-size:7px;letter-spacing:0}.track{padding:7px 5px;min-height:63px}.track-name{display:flex;gap:3px}.track-title{font-size:10px}.track-category{font-size:8px}.track-upload{width:19px;height:22px}.control{min-height:30px;font-size:10px}.fader{gap:3px}.volume-value{font-size:9px;min-width:21px}.fx-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.hero h1{font-size:44px}}
+
+.song-choice{min-width:0}
+.song-choice label{display:block;margin:2px 0 7px;font:600 18px Georgia,serif;color:#f2dfbe}
+.song-choice select{appearance:auto;display:block;width:min(385px,75vw);max-width:100%;height:42px;padding:9px 12px;border:1px solid #c4a274;border-radius:5px;background:#29251f;color:#f6e5c6;font:600 14px Arial,sans-serif;cursor:pointer;box-shadow:inset 0 1px 2px #0005}
+.song-choice select:focus-visible{outline:2px solid #eed0a0;outline-offset:3px}
+@media(max-width:760px){.song-choice select{width:min(355px,calc(100vw - 125px));font-size:13px}.song-choice label{font-size:16px}}
 </style></head>
 <body>
 <div class="wrap">
@@ -98,7 +104,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 </section>
 <main class="workspace" aria-label="Tavernen-Mischpult">
 <div class="mixer-head">
-<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div><div class="section-kicker">Sechs gleichzeitig laufende Spuren</div><h2>Musik-Mischpult</h2></div></div>
+<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div class="song-choice"><div class="section-kicker">Musik-Mischpult · sechs synchrone Spuren</div><label for="songSelect">Musikstück auswählen</label><select id="songSelect" aria-label="Musikstück auswählen"></select></div></div>
 <div class="transport">
 <div class="transport-status"><span class="status-dot" id="statusDot"></span><span id="statusLabel">Noch keine Musikdateien hinterlegt</span></div>
 <span class="time" id="clock" aria-label="Laufzeit">00:00</span>
@@ -141,7 +147,19 @@ const effects=[
  {id:'wuerfel',title:'Würfel',symbol:'⚄',src:''},
  {id:'buh',title:'Buhrufe',symbol:'!',src:''}
 ];
-const tracks=trackData.map(x=>({...x,enabled:true,muted:false,solo:false,loop:true,buffer:null,source:null,gain:null}));
+// Playlist-Konfiguration: Hier werden später die gelieferten Musikstücke und ihre sechs Stems eingetragen.
+// Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
+const songCatalog=[
+ {id:'taverne-1',name:'Musikstück 1 · Dateien folgen',tracks:{
+  atmo:{src:''},drums:{src:''},gitarre:{src:''},floeten:{src:''},vocals:{src:''},sonstiges:{src:''}
+ }},
+ {id:'taverne-2',name:'Musikstück 2 · Dateien folgen',tracks:{
+  atmo:{src:''},drums:{src:''},gitarre:{src:''},floeten:{src:''},vocals:{src:''},sonstiges:{src:''}
+ }}
+];
+let songRevision=0;
+const songSelect=document.getElementById('songSelect');
+const tracks=trackData.map(x=>({...x,baseTitle:x.title,baseVolume:x.volume,enabled:true,muted:false,solo:false,loop:true,buffer:null,source:null,gain:null,loading:null}));
 const fx=effects.map(x=>({...x,buffer:null}));
 const trackList=document.getElementById('trackList');
 const fxButtons=document.getElementById('fxButtons');
@@ -154,30 +172,68 @@ function ensureCtx(){if(!ctx){const C=window.AudioContext||window.webkitAudioCon
 function ensureFxCtx(){if(!fxCtx){const C=window.AudioContext||window.webkitAudioContext;fxCtx=new C();}return fxCtx;}
 function updateGains(){const soloed=tracks.some(t=>t.solo);for(const t of tracks){const level=(t.enabled&&!t.muted&&(!soloed||t.solo)) ? Math.pow(t.volume/100,1.6) : 0;if(t.gain&&ctx){t.gain.gain.setTargetAtTime(level,ctx.currentTime,.018);}updateTrackUI(t);}}
 function updateTrackUI(t){const row=document.getElementById('track-'+t.id);if(!row)return;const play=row.querySelector('.play'),stop=row.querySelector('.stop'),mute=row.querySelector('.mute'),solo=row.querySelector('.solo'),loop=row.querySelector('.loop');play.classList.toggle('active',t.enabled);stop.classList.toggle('active',!t.enabled);mute.classList.toggle('active',t.muted);solo.classList.toggle('active',t.solo);loop.classList.toggle('active',t.loop);play.setAttribute('aria-pressed',String(t.enabled));stop.setAttribute('aria-pressed',String(!t.enabled));mute.setAttribute('aria-pressed',String(t.muted));solo.setAttribute('aria-pressed',String(t.solo));loop.setAttribute('aria-pressed',String(t.loop));const title=row.querySelector('.track-title');title.textContent=t.filename||t.title;title.title=t.filename||t.title;row.classList.toggle('has-audio',Boolean(t.buffer||t.src));}
+function stopAllTrackSources(){
+  for(const t of tracks){
+    if(!t.source)continue;
+    const src=t.source;t.source=null;
+    src.onended=null;
+    try{src.stop();}catch(e){}
+    try{src.disconnect();}catch(e){}
+  }
+}
+function chooseSong(id){
+  const song=songCatalog.find(x=>x.id===id);
+  if(!song)return;
+  const wasPlaying=playing;
+  songRevision++;
+  stopAllTrackSources();
+  started=false;playing=false;anchor=ctx?ctx.currentTime:0;
+  for(const t of tracks){
+    const cfg=song.tracks[t.id]||{};
+    t.src=cfg.src||'';
+    t.title=cfg.title||t.baseTitle;
+    t.volume=typeof cfg.volume==='number'?cfg.volume:t.baseVolume;
+    t.filename=null;
+    t.buffer=null;
+    t.loading=null;
+    t.enabled=true;t.muted=false;t.solo=false;t.loop=true;
+  }
+  songSelect.value=song.id;
+  renderTracks();
+  updateGains();
+  updateClock();
+  setStatus(song.name+(tracks.some(x=>x.src)?' · bereit':' · Audiodateien folgen'));
+  if(wasPlaying && tracks.some(x=>x.src))void startAll();
+}
 function sourceFor(t,when,at){if(!t.buffer||!t.gain||!ctx)return;if(t.source){const old=t.source;t.source=null;try{old.stop();}catch(e){}old.disconnect();}
  let offset=Math.max(0,at);if(t.loop)offset=offset%t.buffer.duration;else if(offset>=t.buffer.duration)return;
  const src=ctx.createBufferSource();src.buffer=t.buffer;src.loop=t.loop;src.connect(t.gain);t.source=src;
  src.onended=()=>{if(t.source===src){t.source=null;}};
  src.start(when,offset);
 }
-function loadConfiguredAudio(x, audioContext) {
-  if (x.buffer) return true;
-  if (!x.src) return false;
-  if (x.loading) return x.loading;
-  x.loading=(async()=>{
-    const response=await fetch(x.src);
-    if (!response.ok) throw new Error('HTTP '+response.status+': '+x.src);
+function loadConfiguredAudio(x,audioContext){
+  if(x.buffer)return Promise.resolve(true);
+  if(!x.src)return Promise.resolve(false);
+  if(x.loading)return x.loading;
+  const requestedSrc=x.src;
+  const task=(async()=>{
+    const response=await fetch(requestedSrc);
+    if(!response.ok)throw new Error('HTTP '+response.status+': '+requestedSrc);
     const decoded=await audioContext.decodeAudioData(await response.arrayBuffer());
-    if (!decoded.duration) throw new Error('Leere Audiodatei');
+    if(!decoded.duration)throw new Error('Leere Audiodatei');
+    if(x.src!==requestedSrc)return false; // zwischenzeitlich anderes Musikstück gewählt
     x.buffer=decoded;
-    if ('category' in x) updateTrackUI(x);
+    if('category' in x)updateTrackUI(x);
     return true;
   })().catch(e=>{
-    console.warn('Audiodatei konnte nicht geladen werden',x.src,e);
-    toast('Audio für '+(x.category||x.title)+' konnte nicht geladen werden.');
+    if(x.src===requestedSrc){
+      console.warn('Audiodatei konnte nicht geladen werden',requestedSrc,e);
+      toast('Audio für '+(x.category||x.title)+' konnte nicht geladen werden.');
+    }
     return false;
-  }).finally(()=>{x.loading=null;});
-  return x.loading;
+  }).finally(()=>{if(x.loading===task)x.loading=null;});
+  x.loading=task;
+  return task;
 }
 function renderTracks() {
   trackList.innerHTML=tracks.map(t=>`<div class="track mixer-grid" id="track-${t.id}"><div class="track-name"><span class="track-icon" aria-hidden="true">${t.symbol}</span><div class="track-details"><span class="track-category">${t.category}</span><span class="track-title">${t.title}</span></div></div><button type="button" class="control play active" title="Spur hörbar schalten (bleibt synchron)" aria-label="Play ${t.category}">▶</button><button type="button" class="control stop" title="Spur ausblenden, Zeitachse läuft weiter" aria-label="Stop ${t.category}">■</button><button type="button" class="control loop active" title="Loop an oder aus" aria-label="Loop ${t.category}">↻</button><button type="button" class="control mute" title="Stumm schalten" aria-label="Stumm ${t.category}">M</button><button type="button" class="control solo" title="Nur diese Spur hören" aria-label="Solo ${t.category}">S</button><label class="fader"><input type="range" min="0" max="100" step="1" value="${t.volume}" style="--fill:${t.volume}%" aria-label="Lautstärke ${t.category}"/><span class="volume-value">${t.volume}%</span></label></div>`).join('');
@@ -204,18 +260,21 @@ function renderTracks() {
     };
   }
 }
-async function startAll() {
+async function startAll(){
   if(!tracks.some(x=>x.buffer||x.src)){
-    toast('Noch keine Audiodateien hinterlegt. Sie werden direkt in die Webseite eingebunden.');
+    toast('Für dieses Musikstück wurden noch keine Audiodateien hinterlegt.');
     return;
   }
   const c=ensureCtx();if(!c)return;
+  const revision=songRevision;
   try{
     await Promise.all(tracks.filter(x=>x.src&&!x.buffer).map(x=>loadConfiguredAudio(x,c)));
+    if(revision!==songRevision)return;
     if(!tracks.some(x=>x.buffer)){
       toast('Es konnten noch keine Audiodateien geladen werden.');return;
     }
     await c.resume();
+    if(revision!==songRevision)return;
     if(!started){
       const when=c.currentTime+.08;
       anchor=when;
@@ -229,7 +288,7 @@ async function startAll() {
       }
     }
     playing=true;
-    setStatus('Alle hinterlegten Spuren laufen synchron');
+    setStatus('Alle Spuren laufen synchron');
   }catch(e){toast('Audio konnte nicht gestartet werden');console.warn(e);}
 }
 async function pauseAll(){if(!ctx||!started)return;try{await ctx.suspend();playing=false;setStatus('Pausiert – Spuren bleiben synchron');}catch(e){console.warn(e);}}
@@ -255,7 +314,9 @@ function renderFX() {
   }
 }
 function updateClock(){const s=Math.floor(currentTime());document.getElementById('clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-renderTracks();renderFX();setStatus('Noch keine Musikdateien hinterlegt');
+songSelect.innerHTML=songCatalog.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
+songSelect.addEventListener('change',e=>chooseSong(e.target.value));
+renderFX();chooseSong(songCatalog[0].id);
 document.getElementById('startAll').onclick=startAll;document.getElementById('pauseAll').onclick=pauseAll;setInterval(updateClock,180);
 </script>
 </body></html>
