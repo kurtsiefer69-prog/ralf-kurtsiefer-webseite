@@ -43,6 +43,15 @@ a{-webkit-tap-highlight-color:transparent}
 .artist-links a:hover,.artist-links a:focus-visible{background:#715333;border-color:#eac886;outline:1px solid #eac886}
 @media(max-width:600px){.artist-links{gap:8px;padding:14px 10px}.artist-links strong{width:100%;margin:0}.artist-links a{font-size:12px;padding:9px 12px;flex:1 1 40%}}
 
+
+/* Plug Ins im unteren linken Pergamentfeld */
+.slot.plugins{justify-content:center;padding:.2% .35%;gap:clamp(3px,.32vw,7px)}
+.slot.plugins h2{font-size:clamp(13px,1.18vw,24px)}
+.plugin-links{display:flex;flex-direction:column;align-items:center;width:100%;gap:clamp(4px,.4vw,8px)}
+.slot.plugins .tool-link{width:94%;max-width:none;padding:4px 3px;min-height:clamp(23px,1.82vw,37px);font-size:clamp(9px,.67vw,15px);line-height:1.13}
+.mobile .mobile-plugins .mobile-plugin-links{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+.mobile .mobile-plugins .mobile-plugin-links a{display:flex;width:100%;font-size:15px}
+
 </style>
 </head>
 <body>
@@ -61,7 +70,13 @@ a{-webkit-tap-highlight-color:transparent}
       <h2>AI Propmts erzeugen</h2>
       <a class="tool-link" href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQApb06ZNU7fTIdcgskZuig2ASX0CD1hqpuAyf3EmACe_yw?e=DggRm8" target="_blank" rel="noopener noreferrer">Tool öffnen</a>
     </section>
-    <section class="slot bottom-left" aria-label="Freies Feld unten links"></section>
+    <section class="slot bottom-left plugins" aria-label="Plug Ins">
+      <h2>Plug Ins</h2>
+      <div class="plugin-links">
+        <a class="tool-link" href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQB0r7ubmY0OTLC8lVqGy5hKAeAUa6uy66taUWqsGLB0_ek?e=1OmGwB" target="_blank" rel="noopener noreferrer">Orchester Hall Daten</a>
+        <a class="tool-link" href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQCqeq4VKj_GQYSlxh5xxh3GARhLtQUVTmYm9x3xalxvc2Q?e=6xsbjl" target="_blank" rel="noopener noreferrer">Orchester Hall bat</a>
+      </div>
+    </section>
     <section class="slot bottom-middle" aria-label="Freies Feld unten Mitte"></section>
     <section class="slot bottom-right" aria-label="Freies Feld unten rechts"></section>
   </main>
@@ -79,6 +94,13 @@ a{-webkit-tap-highlight-color:transparent}
     <article style="margin-top:16px">
       <h2>AI Propmts erzeugen</h2>
       <a href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQApb06ZNU7fTIdcgskZuig2ASX0CD1hqpuAyf3EmACe_yw?e=DggRm8" target="_blank" rel="noopener noreferrer">Tool öffnen</a>
+    </article>
+    <article class="mobile-plugins" style="margin-top:16px">
+      <h2>Plug Ins</h2>
+      <div class="mobile-plugin-links">
+        <a href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQB0r7ubmY0OTLC8lVqGy5hKAeAUa6uy66taUWqsGLB0_ek?e=1OmGwB" target="_blank" rel="noopener noreferrer">Orchester Hall Daten</a>
+        <a href="https://orkpack-my.sharepoint.com/:u:/g/personal/orkpack_orkpack_onmicrosoft_com/IQCqeq4VKj_GQYSlxh5xxh3GARhLtQUVTmYm9x3xalxvc2Q?e=6xsbjl" target="_blank" rel="noopener noreferrer">Orchester Hall bat</a>
+      </div>
     </article>
   </section>
 </div>
