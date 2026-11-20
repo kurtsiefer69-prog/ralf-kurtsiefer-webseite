@@ -160,7 +160,7 @@ const effects=[
  {id:'wuerfel',title:'Würfel',symbol:'⚄',src:'audio/Würfeln.ogg'},
  {id:'buh',title:'Buhrufe',symbol:'!',src:'audio/Boo.ogg'}
 ];
-// Taverne test: sieben OGG-Dateien auf sechs Kanälen. Chor und Vocals werden gemeinsam geregelt.
+// Landschaft: vorläufige sieben Test-OGG-Dateien auf sechs Kanälen. Chor und Vocals werden gemeinsam geregelt.
 // Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
 const songCatalog=[
  {id:'landschaft-test',name:'Landschaft · Teststück (Taverne)',tracks:{
@@ -400,7 +400,7 @@ function animateLedMeters(){
 requestAnimationFrame(animateLedMeters);
 
 const selectedVideoFile='';
-const landscapeImage='audio/Landscape%20125.jpg';
+const landscapeImage='audio/Landscape 125.jpg';
 async function ensureZipLibrary(){
   if(window.JSZip)return window.JSZip;
   if(window.zipLibraryPromise)return window.zipLibraryPromise;
