@@ -104,7 +104,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 </section>
 <main class="workspace" aria-label="Tavernen-Mischpult">
 <div class="mixer-head">
-<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div class="song-choice"><div class="section-kicker">Musik-Mischpult · sieben synchrone Spuren</div><label for="songSelect">Musikstück auswählen</label><select id="songSelect" aria-label="Musikstück auswählen"></select></div></div>
+<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div class="song-choice"><div class="section-kicker">Musik-Mischpult · sechs Mischpult-Kanäle</div><label for="songSelect">Musikstück auswählen</label><select id="songSelect" aria-label="Musikstück auswählen"></select></div></div>
 <div class="transport">
 <div class="transport-status"><span class="status-dot" id="statusDot"></span><span id="statusLabel">Noch keine Musikdateien hinterlegt</span></div>
 <span class="time" id="clock" aria-label="Laufzeit">00:00</span>
@@ -113,7 +113,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 </div>
 </div>
 <div class="column-head mixer-grid" aria-hidden="true"><div>Spur / Liedtitel</div><div>Play</div><div>Stop</div><div>Loop</div><div>Stumm</div><div>Solo</div><div>Lautstärke</div></div>
-<div id="trackList" aria-label="Sieben Musikspuren"></div>
+<div id="trackList" aria-label="Sechs Mischpult-Kanäle"></div>
 <div class="fx-panel">
 <div class="fx-label"><div class="section-kicker">Separat abspielbar</div><h3>Soundeffekte</h3><span>Per Klick zusätzlich zur Musik</span></div>
 <div class="fx-buttons" id="fxButtons"></div>
@@ -148,7 +148,7 @@ const effects=[
  {id:'wuerfel',title:'Würfel',symbol:'⚄',src:''},
  {id:'buh',title:'Buhrufe',symbol:'!',src:''}
 ];
-// Taverne test: alle sieben OGG-Stems auf einer gemeinsamen Web-Audio-Zeitachse.
+// Taverne test: sieben OGG-Dateien auf sechs Kanälen. Chor und Vocals werden gemeinsam geregelt.
 // Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
 const songCatalog=[
  {id:'taverne-test',name:'Taverne test',tracks:{
@@ -239,25 +239,34 @@ function loadConfiguredAudio(x,audioContext){
   x.loading=task;
   return task;
 }
+function syncChoirWithVocals(t){
+  if(t.id!=='vocals')return;
+  const choir=tracks.find(x=>x.id==='choir');
+  if(!choir)return;
+  choir.enabled=t.enabled;choir.muted=t.muted;choir.solo=t.solo;choir.loop=t.loop;choir.volume=t.volume;
+  if(choir.source)choir.source.loop=choir.loop;
+}
 function renderTracks() {
-  trackList.innerHTML=tracks.map(t=>`<div class="track mixer-grid" id="track-${t.id}"><div class="track-name"><span class="track-icon" aria-hidden="true">${t.symbol}</span><div class="track-details"><span class="track-category">${t.category}</span><span class="track-title">${t.title}</span></div></div><button type="button" class="control play active" title="Spur hörbar schalten (bleibt synchron)" aria-label="Play ${t.category}">▶</button><button type="button" class="control stop" title="Spur ausblenden, Zeitachse läuft weiter" aria-label="Stop ${t.category}">■</button><button type="button" class="control loop active" title="Loop an oder aus" aria-label="Loop ${t.category}">↻</button><button type="button" class="control mute" title="Stumm schalten" aria-label="Stumm ${t.category}">M</button><button type="button" class="control solo" title="Nur diese Spur hören" aria-label="Solo ${t.category}">S</button><label class="fader"><input type="range" min="0" max="100" step="1" value="${t.volume}" style="--fill:${t.volume}%" aria-label="Lautstärke ${t.category}"/><span class="volume-value">${t.volume}%</span></label></div>`).join('');
+  trackList.innerHTML=tracks.filter(t=>t.id!=='choir').map(t=>`<div class="track mixer-grid" id="track-${t.id}"><div class="track-name"><span class="track-icon" aria-hidden="true">${t.symbol}</span><div class="track-details"><span class="track-category">${t.category}</span><span class="track-title">${t.title}</span></div></div><button type="button" class="control play active" title="Spur hörbar schalten (bleibt synchron)" aria-label="Play ${t.category}">▶</button><button type="button" class="control stop" title="Spur ausblenden, Zeitachse läuft weiter" aria-label="Stop ${t.category}">■</button><button type="button" class="control loop active" title="Loop an oder aus" aria-label="Loop ${t.category}">↻</button><button type="button" class="control mute" title="Stumm schalten" aria-label="Stumm ${t.category}">M</button><button type="button" class="control solo" title="Nur diese Spur hören" aria-label="Solo ${t.category}">S</button><label class="fader"><input type="range" min="0" max="100" step="1" value="${t.volume}" style="--fill:${t.volume}%" aria-label="Lautstärke ${t.category}"/><span class="volume-value">${t.volume}%</span></label></div>`).join('');
   for(const t of tracks){
     const r=document.getElementById('track-'+t.id);
     r.querySelector('.play').onclick=()=>{
-      t.enabled=true;updateGains();
+      t.enabled=true;syncChoirWithVocals(t);updateGains();
       if(!t.buffer&&!t.src)toast('Für '+t.category+' ist noch keine Audiodatei hinterlegt.');
     };
-    r.querySelector('.stop').onclick=()=>{t.enabled=false;updateGains();};
+    r.querySelector('.stop').onclick=()=>{t.enabled=false;syncChoirWithVocals(t);updateGains();};
     r.querySelector('.loop').onclick=()=>{
       t.loop=!t.loop;
+      syncChoirWithVocals(t);
       if(t.source)t.source.loop=t.loop;
       if(t.loop && started && t.buffer && !t.source)sourceFor(t,ctx.currentTime+.025,currentTime()+.025);
       updateGains();
     };
-    r.querySelector('.mute').onclick=()=>{t.muted=!t.muted;updateGains();};
-    r.querySelector('.solo').onclick=()=>{t.solo=!t.solo;updateGains();};
+    r.querySelector('.mute').onclick=()=>{t.muted=!t.muted;syncChoirWithVocals(t);updateGains();};
+    r.querySelector('.solo').onclick=()=>{t.solo=!t.solo;syncChoirWithVocals(t);updateGains();};
     r.querySelector('.fader input').oninput=e=>{
       t.volume=Number(e.target.value);
+      syncChoirWithVocals(t);
       e.target.style.setProperty('--fill',t.volume+'%');
       r.querySelector('.volume-value').textContent=t.volume+'%';
       updateGains();
