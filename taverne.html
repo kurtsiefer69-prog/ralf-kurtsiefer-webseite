@@ -139,6 +139,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <a href="https://music.apple.com/de/artist/ralf-kurtsiefer/1214976619" target="_blank" rel="noopener noreferrer">Apple Music</a>
 <a href="https://soundcloud.com/ralfkurtsiefer" target="_blank" rel="noopener noreferrer">SoundCloud</a>
 <button class="video-placeholder" id="videoWindowButton" type="button" title="Stummes Bardenvideo in eigenem Fenster öffnen">▶ Video</button>
+<button class="video-placeholder" id="downloadSongButton" type="button" title="Ausgewähltes Stück mit Spuren, Effekten, Video und Webseiten als ZIP laden">⇩ Download</button>
 </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -398,6 +399,66 @@ function animateLedMeters(){
 }
 requestAnimationFrame(animateLedMeters);
 
+const selectedVideoFile='audio/Taverne-video.mp4';
+async function ensureZipLibrary(){
+  if(window.JSZip)return window.JSZip;
+  if(window.zipLibraryPromise)return window.zipLibraryPromise;
+  window.zipLibraryPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    script.onload=()=>window.JSZip?resolve(window.JSZip):reject(new Error('ZIP-Bibliothek nicht verfügbar'));
+    script.onerror=()=>reject(new Error('ZIP-Bibliothek konnte nicht geladen werden'));
+    document.head.appendChild(script);
+  }).catch(e=>{window.zipLibraryPromise=null;throw e;});
+  return window.zipLibraryPromise;
+}
+let downloadRunning=false;
+document.getElementById('downloadSongButton').onclick=async()=>{
+  if(downloadRunning)return;
+  const song=songCatalog.find(x=>x.id===songSelect.value);
+  if(!song){toast('Bitte zuerst ein Musikstück auswählen.');return;}
+  downloadRunning=true;
+  const button=document.getElementById('downloadSongButton');
+  button.disabled=true;
+  button.textContent='ZIP wird vorbereitet …';
+  try{
+    const JSZip=await ensureZipLibrary();
+    const zip=new JSZip();
+    const paths=new Set(['taverne.html','taverne-video.html',selectedVideoFile]);
+    for(const track of Object.values(song.tracks)){
+      if(track.src)paths.add(track.src);
+    }
+    for(const effect of effects)if(effect.src)paths.add(effect.src);
+    const files=[...paths];
+    let finished=0;
+    // Dateien nur aus demselben Webverzeichnis laden; fehlende Dateien stoppen den Download.
+    for(const file of files){
+      const response=await fetch(file,{cache:'no-cache'});
+      if(!response.ok)throw new Error(file+' (HTTP '+response.status+')');
+      zip.file(file,await response.blob());
+      finished++;
+      button.textContent='Lade Dateien '+finished+'/'+files.length;
+    }
+    button.textContent='ZIP wird erstellt …';
+    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:1}});
+    const link=document.createElement('a');
+    const url=URL.createObjectURL(blob);
+    link.href=url;
+    link.download=(song.name||song.id).replace(/[^a-zA-Z0-9äöüÄÖÜß_-]+/g,'-')+'-Komplettpaket.zip';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    toast('Komplettpaket heruntergeladen: '+song.name);
+  }catch(error){
+    console.error('Komplettpaket konnte nicht erstellt werden',error);
+    toast('Download fehlgeschlagen: '+error.message);
+  }finally{
+    downloadRunning=false;
+    button.disabled=false;
+    button.textContent='⇩ Download';
+  }
+};
 let videoWindow=null;
 function sendVideoState(target){
   if(!target||target.closed)return;
