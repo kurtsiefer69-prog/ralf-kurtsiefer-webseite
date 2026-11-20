@@ -71,7 +71,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 .led-meter .led.lit.yellow{background:#f7e45a;box-shadow:0 0 7px #f7dc43}
 .led-meter .led.lit.orange{background:#ffa442;box-shadow:0 0 7px #fa9c39}
 .led-meter .led.lit.red{background:#ff5550;box-shadow:0 0 9px #ff453c}
-.music-links .video-placeholder{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 17px;border:1px solid #756142;border-radius:4px;background:rgba(50,41,31,.8);color:#f3debc;font:700 12px Arial,sans-serif;opacity:.75;cursor:default}
+.music-links .video-placeholder{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 17px;border:1px solid #756142;border-radius:4px;background:rgba(50,41,31,.8);color:#f3debc;font:700 12px Arial,sans-serif;opacity:1;cursor:pointer}.music-links .video-placeholder:hover{background:#715432;border-color:#f0cc92}
 @media(max-width:760px){.led-meter{gap:2px;padding:5px 3px}.led-meter .led{height:10px}}
 @media(max-width:480px){.led-meter{gap:1px;padding:4px 2px}.led-meter .led{height:9px}}
 .fx-panel{display:flex;align-items:center;gap:18px;padding:17px 23px;background:rgba(10,9,8,.54);border-top:1px solid #615038}
@@ -138,7 +138,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <a href="https://open.spotify.com/playlist/2lu0aLfy3jJ44AKqOlFv7x?si=cba8605eb21a4173" target="_blank" rel="noopener noreferrer">Spotify · Playlist 2</a>
 <a href="https://music.apple.com/de/artist/ralf-kurtsiefer/1214976619" target="_blank" rel="noopener noreferrer">Apple Music</a>
 <a href="https://soundcloud.com/ralfkurtsiefer" target="_blank" rel="noopener noreferrer">SoundCloud</a>
-<button class="video-placeholder" type="button" disabled title="Video folgt" aria-label="Video – kommt demnächst">▶ Video</button>
+<button class="video-placeholder" id="videoWindowButton" type="button" title="Stummes Bardenvideo in eigenem Fenster öffnen">▶ Video</button>
 </footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -398,6 +398,21 @@ function animateLedMeters(){
 }
 requestAnimationFrame(animateLedMeters);
 
+let videoWindow=null;
+function sendVideoState(target){
+  if(!target||target.closed)return;
+  target.postMessage({type:'taverne-audio-state',time:currentTime(),playing:playing},location.origin);
+}
+document.getElementById('videoWindowButton').onclick=()=>{
+  videoWindow=window.open('taverne-video.html','taverneBarde','width=1150,height=740,resizable=yes,scrollbars=yes');
+  if(videoWindow)videoWindow.focus();
+  else toast('Bitte Pop-ups für diese Webseite erlauben.');
+};
+window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.data?.type!=='taverne-video-request')return;
+  sendVideoState(event.source);
+});
+setInterval(()=>sendVideoState(videoWindow),900);
 document.getElementById('startAll').onclick=startAll;document.getElementById('pauseAll').onclick=pauseAll;setInterval(updateClock,180);
 </script>
 </body></html>
