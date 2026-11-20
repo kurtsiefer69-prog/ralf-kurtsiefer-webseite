@@ -330,9 +330,16 @@ function renderFX() {
         await C.resume();
         if(!x.buffer && !(await loadConfiguredAudio(x,C)))return;
         const src=C.createBufferSource(),g=C.createGain();
-        src.buffer=x.buffer;g.gain.value=.85;
+        src.buffer=x.buffer;
+        // Nur die Soundeffekte: 75 % Pegel, sanfter Fade-out am Dateiende.
+        const duration=x.buffer.duration;
+        const fade=Math.min(0.9,duration*0.35);
+        const startAt=C.currentTime+0.01;
+        g.gain.setValueAtTime(0.75,startAt);
+        g.gain.setValueAtTime(0.75,startAt+Math.max(0,duration-fade));
+        g.gain.linearRampToValueAtTime(0,startAt+duration);
         src.connect(g);g.connect(C.destination);
-        src.start();src.onended=()=>{src.disconnect();g.disconnect();};
+        src.start(startAt);src.onended=()=>{src.disconnect();g.disconnect();};
       }catch(e){toast('Soundeffekt konnte nicht abgespielt werden');console.warn(e);}
     };
   }
