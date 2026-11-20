@@ -104,7 +104,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 </section>
 <main class="workspace" aria-label="Tavernen-Mischpult">
 <div class="mixer-head">
-<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div class="song-choice"><div class="section-kicker">Musik-Mischpult · sechs synchrone Spuren</div><label for="songSelect">Musikstück auswählen</label><select id="songSelect" aria-label="Musikstück auswählen"></select></div></div>
+<div class="mix-heading"><span class="mix-symbol" aria-hidden="true">♫</span><div class="song-choice"><div class="section-kicker">Musik-Mischpult · sieben synchrone Spuren</div><label for="songSelect">Musikstück auswählen</label><select id="songSelect" aria-label="Musikstück auswählen"></select></div></div>
 <div class="transport">
 <div class="transport-status"><span class="status-dot" id="statusDot"></span><span id="statusLabel">Noch keine Musikdateien hinterlegt</span></div>
 <span class="time" id="clock" aria-label="Laufzeit">00:00</span>
@@ -113,12 +113,12 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 </div>
 </div>
 <div class="column-head mixer-grid" aria-hidden="true"><div>Spur / Liedtitel</div><div>Play</div><div>Stop</div><div>Loop</div><div>Stumm</div><div>Solo</div><div>Lautstärke</div></div>
-<div id="trackList" aria-label="Sechs Musikspuren"></div>
+<div id="trackList" aria-label="Sieben Musikspuren"></div>
 <div class="fx-panel">
 <div class="fx-label"><div class="section-kicker">Separat abspielbar</div><h3>Soundeffekte</h3><span>Per Klick zusätzlich zur Musik</span></div>
 <div class="fx-buttons" id="fxButtons"></div>
 </div>
-<div class="helper"><span><span class="highlight">Musikdateien:</span> Die Audiospuren und Effekte werden vom Seitenbetreiber fest hinterlegt – Besucher müssen nichts hochladen.</span><span><span class="highlight">Wichtig:</span> Stop, Solo und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
+<div class="helper"><span><span class="highlight">Musikdateien:</span> Alle sieben Spuren von „Taverne test“ werden synchron gemischt. Soundeffekte folgen.</span><span><span class="highlight">Wichtig:</span> Stop, Solo und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
 </main>
 <footer class="music-links" aria-label="Ralf Kurtsiefer auf Musikplattformen">
 <span class="music-links-label">Mehr Musik entdecken</span>
@@ -139,6 +139,7 @@ const trackData=[
  {id:'gitarre',category:'Gitarre',title:'Laute & Gitarre',symbol:'♬',volume:75,src:''},
  {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:75,src:''},
  {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:75,src:''},
+ {id:'choir',category:'Choir',title:'Chor',symbol:'♛',volume:75,src:''},
  {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:75,src:''},
 ];
 const effects=[
@@ -147,14 +148,17 @@ const effects=[
  {id:'wuerfel',title:'Würfel',symbol:'⚄',src:''},
  {id:'buh',title:'Buhrufe',symbol:'!',src:''}
 ];
-// Playlist-Konfiguration: Hier werden später die gelieferten Musikstücke und ihre sechs Stems eingetragen.
+// Taverne test: alle sieben OGG-Stems auf einer gemeinsamen Web-Audio-Zeitachse.
 // Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
 const songCatalog=[
- {id:'taverne-1',name:'Musikstück 1 · Dateien folgen',tracks:{
-  atmo:{src:''},drums:{src:''},gitarre:{src:''},floeten:{src:''},vocals:{src:''},sonstiges:{src:''}
- }},
- {id:'taverne-2',name:'Musikstück 2 · Dateien folgen',tracks:{
-  atmo:{src:''},drums:{src:''},gitarre:{src:''},floeten:{src:''},vocals:{src:''},sonstiges:{src:''}
+ {id:'taverne-test',name:'Taverne test',tracks:{
+  atmo:{src:'audio/Atmo.ogg'},
+  drums:{src:'audio/Drums.ogg'},
+  gitarre:{src:'audio/Gitarre.ogg'},
+  floeten:{src:'audio/Flöte.ogg'},
+  vocals:{src:'audio/Vocals.ogg'},
+  choir:{src:'audio/Choir.ogg'},
+  sonstiges:{src:'audio/Sonstiges.ogg'}
  }}
 ];
 let songRevision=0;
