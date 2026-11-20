@@ -27,8 +27,8 @@ footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:
 <main>
 <header><div><strong>Der Barde am Kamin</strong><small>TAVERNE TEST · STUMMES FANTASY-VIDEO</small></div><div class="actions"><span id="state">Verbindung zum Mischpult …</span><button type="button" id="full">⛶ Vollbild</button></div></header>
 <section class="stage" id="stage">
-<video id="scene" muted playsinline loop preload="auto" aria-label="Barde spielt Laute vor einem Kaminfeuer"><source src="audio/taverne-barde.mp4" type="video/mp4"></video>
-<div id="placeholder" class="placeholder"><strong>Video noch nicht auf GitHub</strong><span>Bitte die Datei <b>taverne-barde.mp4</b> in den Ordner <b>audio</b> hochladen. Die Videoseite ist bereits einsatzbereit.</span></div>
+<video id="scene" muted playsinline loop preload="auto" aria-label="Barde spielt Laute vor einem Kaminfeuer"><source src="audio/Taverne-video.mp4" type="video/mp4"></video>
+<div id="placeholder" class="placeholder"><strong>Video noch nicht auf GitHub</strong><span>Bitte die Datei <b>Taverne-video.mp4</b> in den Ordner <b>audio</b> hochladen. Die Videoseite ist bereits einsatzbereit.</span></div>
 </section>
 <footer><span>Das Video enthält keine Tonspur. Die Musik läuft im Tavernen-Mischpult.</span><span>Fenster frei skalierbar · auf zweiten Bildschirm verschiebbar</span></footer>
 </main>
@@ -45,9 +45,10 @@ window.addEventListener('message',event=>{
   lastSync=Date.now();
   const d=event.data, target=((Number(d.time)||0)%66+66)%66;
   if(Number.isFinite(scene.duration)&&scene.duration>0){
-    const diff=Math.abs(scene.currentTime-target);
+    const videoTarget=target%scene.duration;
+    const diff=Math.abs(scene.currentTime-videoTarget);
     const wrapped=Math.min(diff,Math.abs(scene.duration-diff));
-    if(wrapped>.45)try{scene.currentTime=target;}catch(e){}
+    if(wrapped>.45)try{scene.currentTime=videoTarget;}catch(e){}
   }
   if(d.playing){state.textContent='Synchron mit Mischpult';scene.play().catch(()=>{state.textContent='Klick ins Video zum Starten';});}
   else{scene.pause();state.textContent='Mischpult pausiert';}
