@@ -134,12 +134,12 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <script>
 'use strict';
 const trackData=[
- {id:'atmo',category:'Atmo',title:'Tavernengeräusche',symbol:'♨',volume:73,src:''},
- {id:'drums',category:'Drums',title:'Trommeln & Rhythmus',symbol:'◉',volume:60,src:''},
+ {id:'atmo',category:'Atmo',title:'Tavernengeräusche',symbol:'♨',volume:75,src:''},
+ {id:'drums',category:'Drums',title:'Trommeln & Rhythmus',symbol:'◉',volume:75,src:''},
  {id:'gitarre',category:'Gitarre',title:'Laute & Gitarre',symbol:'♬',volume:75,src:''},
- {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:68,src:''},
- {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:55,src:''},
- {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:47,src:''},
+ {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:75,src:''},
+ {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:75,src:''},
+ {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:75,src:''},
 ];
 const effects=[
  {id:'lachen',title:'Lachen',symbol:'☺',src:''},
@@ -159,7 +159,7 @@ const songCatalog=[
 ];
 let songRevision=0;
 const songSelect=document.getElementById('songSelect');
-const tracks=trackData.map(x=>({...x,baseTitle:x.title,baseVolume:x.volume,enabled:true,muted:false,solo:false,loop:true,buffer:null,source:null,gain:null,loading:null}));
+const tracks=trackData.map(x=>({...x,baseTitle:x.title,baseVolume:x.volume,enabled:true,muted:!['atmo','gitarre'].includes(x.id),solo:false,loop:true,buffer:null,source:null,gain:null,loading:null}));
 const fx=effects.map(x=>({...x,buffer:null}));
 const trackList=document.getElementById('trackList');
 const fxButtons=document.getElementById('fxButtons');
@@ -196,7 +196,7 @@ function chooseSong(id){
     t.filename=null;
     t.buffer=null;
     t.loading=null;
-    t.enabled=true;t.muted=false;t.solo=false;t.loop=true;
+    t.enabled=true;t.muted=!['atmo','gitarre'].includes(t.id);t.solo=false;t.loop=true;
   }
   songSelect.value=song.id;
   renderTracks();
