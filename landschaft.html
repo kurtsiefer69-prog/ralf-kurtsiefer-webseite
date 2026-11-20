@@ -77,9 +77,9 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 .fx-panel{display:flex;align-items:center;gap:18px;padding:17px 23px;background:rgba(10,9,8,.54);border-top:1px solid #615038}
 .fx-label{min-width:185px}.fx-label h3{margin:4px 0;font-size:19px;font-weight:400}
 .fx-label span{font:11px Arial,sans-serif;color:#a99b8b}
-.fx-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;flex:1}
+.fx-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;flex:1}
 .fx-item{display:flex;min-width:0;align-items:stretch;gap:5px}
-.fx-trigger{flex:1;border:1px solid #716044;background:linear-gradient(#40352a,#24221f);border-radius:5px;color:#e7d1aa;padding:11px 6px;font:700 12px Arial,sans-serif;white-space:nowrap}
+.fx-trigger{flex:1;min-width:0;border:1px solid #716044;background:linear-gradient(#40352a,#24221f);border-radius:5px;color:#e7d1aa;padding:11px 6px;font:700 12px Arial,sans-serif;white-space:nowrap}
 .fx-trigger:hover{background:#665037;border-color:#dcb676}
 .fx-upload{width:29px;flex:none;border:1px solid #6a573d;border-radius:5px;background:#28241e;color:#dabf8e;font:16px Arial,sans-serif;cursor:pointer}
 .fx-upload:hover{background:#57432e}
@@ -155,10 +155,11 @@ const trackData=[
  {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:75,src:''},
 ];
 const effects=[
- {id:'lachen',title:'Lachen',symbol:'☺',src:'audio/Lachen.ogg'},
- {id:'applaus',title:'Applaus',symbol:'♧',src:'audio/Applaus.ogg'},
- {id:'wuerfel',title:'Würfel',symbol:'⚄',src:'audio/Würfeln.ogg'},
- {id:'buh',title:'Buhrufe',symbol:'!',src:'audio/Boo.ogg'}
+ {id:'gewitter',title:'Gewitter',symbol:'⚡',src:''},
+ {id:'regen',title:'Regen',symbol:'☂',src:''},
+ {id:'nacht',title:'Nachtgeräusche',symbol:'☾',src:''},
+ {id:'bach',title:'Bach',symbol:'≈',src:''},
+ {id:'bauernhof',title:'Bauernhof',symbol:'♧',src:''}
 ];
 // Landschaft: vorläufige sieben Test-OGG-Dateien auf sechs Kanälen. Chor und Vocals werden gemeinsam geregelt.
 // Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
@@ -345,25 +346,13 @@ function renderFX() {
         src.buffer=x.buffer;
         // Nur die Soundeffekte: 75 % Pegel, sanfter Fade-out am Dateiende.
         const duration=x.buffer.duration;
-        const isBoo=x.id==='buh';
         const startAt=C.currentTime+0.01;
+        const fade=Math.min(0.9,duration*0.35);
         g.gain.setValueAtTime(0.75,startAt);
-        if(isBoo){
-          // Buhruf: früherer, kräftiger Fade; das knacksende Dateiende wird gar nicht abgespielt.
-          const safeEnd=Math.max(0.2,duration-0.45);
-          const fadeStart=Math.max(0.12,safeEnd-1.8);
-          g.gain.setValueAtTime(0.75,startAt+fadeStart);
-          g.gain.linearRampToValueAtTime(0,startAt+safeEnd);
-          src.connect(g);g.connect(C.destination);
-          src.start(startAt);
-          src.stop(startAt+safeEnd+0.025);
-        }else{
-          const fade=Math.min(0.9,duration*0.35);
-          g.gain.setValueAtTime(0.75,startAt+Math.max(0,duration-fade));
-          g.gain.linearRampToValueAtTime(0,startAt+duration);
-          src.connect(g);g.connect(C.destination);
-          src.start(startAt);
-        }
+        g.gain.setValueAtTime(0.75,startAt+Math.max(0,duration-fade));
+        g.gain.linearRampToValueAtTime(0,startAt+duration);
+        src.connect(g);g.connect(C.destination);
+        src.start(startAt);
         src.onended=()=>{src.disconnect();g.disconnect();};
       }catch(e){toast('Soundeffekt konnte nicht abgespielt werden');console.warn(e);}
     };
