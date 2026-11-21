@@ -1,0 +1,959 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>RaumKlang · IR Generator ohne KI · Ralf Kurtsiefer</title><style>
+:root{--bg:#070b11;--panel:#0f141b;--panel2:#151c25;--line:#37404b;--dim:#91a0b2;--txt:#f4f4f2;--gold:#e6aa4a;--goldBright:#ffd285;--cyan:#42b9f5;--red:#f3585d;--green:#8dc9aa;--accent-glow:#efab4229}
+:root[data-theme=blue]{--gold:#61a8ff;--goldBright:#a8d6ff;--accent-glow:#3479d92a}
+:root[data-theme=teal]{--gold:#39dfcf;--goldBright:#9effe5;--accent-glow:#20bfae24}
+:root[data-theme=violet]{--gold:#c28cf5;--goldBright:#e4baff;--accent-glow:#935fcf29}
+:root[data-theme=copper]{--gold:#e28f64;--goldBright:#ffd0a8;--accent-glow:#be6d3829}
+
+:root[data-theme=emerald]{--gold:#74e4a7;--goldBright:#bbffd5;--accent-glow:#3acf8f28}
+:root[data-theme=rose]{--gold:#fa91ae;--goldBright:#ffd1df;--accent-glow:#ce577c2b}
+:root[data-theme=iceblue]{--gold:#89defb;--goldBright:#d1f4ff;--accent-glow:#50add42c}
+:root[data-theme=silver]{--gold:#c9d4e2;--goldBright:#ffffff;--accent-glow:#91a5c52a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Segoe UI,Inter,Arial,sans-serif;color:var(--txt);background:var(--bg)}body{background:radial-gradient(ellipse 60vw 28vh at 60% -3%,var(--accent-glow),transparent),#080c12}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}button:hover{filter:brightness(1.11)}
+header{height:68px;display:flex;align-items:center;gap:14px;padding:0 21px;border-bottom:1px solid #4b4031;background:linear-gradient(90deg,#10151b,#0d1017);box-shadow:0 6px 26px #0007}
+.logo{color:var(--gold);font-size:34px;font-weight:800;text-shadow:0 0 14px var(--accent-glow)}.brand{font-size:22px;font-weight:750;letter-spacing:-.7px;color:#fff2d9}.brand strong{color:var(--gold)}.brand span{font-size:15px;font-weight:440;color:#e7d7ba}.headright{margin-left:auto;display:flex;align-items:center;gap:7px}.ghostbtn,.themeWrap{color:#ebebea;background:#141b24;border:1px solid #39414b;border-radius:8px;padding:8px 10px;font-size:11px}.themeWrap{display:flex;gap:8px;align-items:center}.themeWrap select{border:0;background:#192332;color:#f7e4bd;font-size:11px;min-width:96px}.ghostbtn{white-space:nowrap}
+.layout{max-width:1910px;margin:0 auto;display:grid;grid-template-columns:286px minmax(0,1fr);gap:12px;padding:12px 14px;align-items:start}.leftRail{display:flex;flex-direction:column;gap:12px;min-width:0}.workspace{display:grid;grid-template-columns:minmax(430px,1.10fr) minmax(410px,.98fr);grid-template-rows:auto auto auto;grid-template-areas:'view plan' 'position hall' 'bottom bottom';gap:12px;min-width:0;align-items:stretch}
+.card{background:linear-gradient(165deg,#151b22,#0d1219 75%);border:1px solid #4d5256;border-radius:11px;box-shadow:0 6px 16px #0008,0 0 0 1px #000 inset;min-width:0;overflow:hidden}.cardHead{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 5px;min-height:33px;gap:8px}.card h3{margin:0;font-size:14px;color:#f1f2ef;letter-spacing:-.1px}.card small,.hint,.subtle{color:var(--dim);font-size:10.5px;line-height:1.5}.cardBody{padding:9px 12px 11px}.divider,.smallline,.separator{height:1px;background:#2e3540;margin:12px 0}.accent{color:var(--gold)}.hidden,[hidden]{display:none!important}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin:9px 9px 5px;padding:4px;border-radius:8px;background:#080e17;border:1px solid #2c3540}.tab{border:0;border-radius:5px;padding:8px 4px;font-size:10px;color:#c9d2df;background:transparent}.tab.active{background:linear-gradient(130deg,var(--gold),#654626);color:#0d1117;font-weight:750;box-shadow:0 0 8px var(--accent-glow)}.tabpage{display:none}.tabpage.active{display:block}.roomList{display:flex;flex-direction:column;gap:1px;margin-top:6px}.roomChoice{display:flex;align-items:center;gap:8px;text-align:left;border:1px solid transparent;background:transparent;color:#f1f1ef;min-height:29px;padding:5px 9px;border-radius:6px;font-size:12px}.roomChoice span{width:19px;text-align:center;color:#d8b67f;font-size:14px}.roomChoice.selected{border-color:#a67c36;background:linear-gradient(90deg,#61421a,#2c2419);color:#fff9e5;box-shadow:inset 0 0 4px #d2ab5545}.roomChoice.selected span{color:#ffe2a3}.roomChoice:hover{background:#2a2b2c}.formContent{padding:7px 10px 11px}.shapeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shapeOption{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:66px;background:#101820;border:1px solid #46505b;border-radius:9px;color:#cfd4db;font-size:11px}.shapeIcon{font-size:29px;line-height:1;color:#d7c9b7}.shapeOption.selected,.shapeOption.active{background:linear-gradient(165deg,#67481d,#221b14);border-color:var(--gold);color:#ffe8b1;box-shadow:inset 0 0 14px var(--accent-glow)}.shapeOption.selected .shapeIcon{color:var(--goldBright)}.shapeless{padding:12px;color:var(--dim);font-size:11px}.fold{border-top:1px solid #303744}.fold summary,.extra summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;color:#edd6b4;font-weight:650;font-size:12px;padding:10px 12px}.fold summary::-webkit-details-marker,.extra summary::-webkit-details-marker{display:none}.fold summary:after,.extra summary:after{content:'⌄';color:var(--gold);font-size:16px}.fold[open] summary:after,.extra[open] summary:after{content:'⌃'}.fold > div{padding:4px 12px 13px}
+.rowfield{margin-top:8px}.fieldtop{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px;font-size:11px}.fieldtop label{color:#d9dde4}.fieldtop output{color:#f4d59c;font-variant-numeric:tabular-nums;white-space:nowrap}input[type=range]{appearance:none;-webkit-appearance:none;display:block;width:100%;height:5px;border-radius:100px;background:linear-gradient(90deg,#594b37,#b18845 48%,#3c4654 48%);cursor:pointer;margin:8px 0 8px}input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:13px;height:13px;background:#fff3d3;border:2px solid var(--gold);border-radius:100%;box-shadow:0 0 8px #e3a64f55}input[type=range]::-moz-range-thumb{width:12px;height:12px;background:#fff3d3;border:2px solid var(--gold);border-radius:100%}
+input[type=text],textarea,.choose{width:100%;border:1px solid #3a4554;border-radius:6px;padding:7px 9px;background:#0d141c;color:#e9eef5;font-size:11px;min-width:0}textarea{resize:vertical}.choose{cursor:pointer}select:focus{border-color:var(--gold)}.hint{margin:5px 0 9px}.filedrop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:12px;border:1px dashed #6e6655;border-radius:8px;background:#1a1d24;font-size:12px;min-height:100px;cursor:pointer}.filedrop input{display:none}.previewimg{width:100%;max-height:180px;object-fit:cover;border:1px solid #5a5f69;border-radius:7px;margin-top:8px;display:none}.previewimg.visible{display:block}.mainbtn{width:100%;min-height:39px;background:linear-gradient(135deg,#c88a2b,#ffca66);color:#160f08;border:1px solid #f2bd61;box-shadow:0 0 16px var(--accent-glow);font-weight:800;border-radius:8px;font-size:12px}.smbtn{padding:9px 12px;background:#1b2530;border:1px solid #566171;color:#e5e9ed;border-radius:8px;font-size:11px}.buttonsrow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.saveLine{display:flex;gap:6px;margin-top:7px;align-items:center}.saveLine input{min-width:0;flex:1}.saveLine button{white-space:nowrap}.keyline{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:#aab3bf;padding:3px 0}.keyline b{color:#f8ca86;font-variant-numeric:tabular-nums}.chip{display:inline-flex;border-radius:5px;border:1px solid #465260;padding:4px 6px;color:#cbd5e4;font-size:10px}
+.viewCard{grid-area:view}.planCard{grid-area:plan}.positionCard{grid-area:position}.hallCard{grid-area:hall}.bottomRow{grid-area:bottom;display:grid;grid-template-columns:minmax(360px,1.23fr) minmax(260px,.85fr) minmax(235px,.72fr);gap:12px;min-width:0}.bottomRow .card{min-width:0}.viewContent{padding:4px 10px 8px}#view3d{display:block;width:100%;height:224px;background:radial-gradient(#38362e,#0d141f);border:1px solid #303948;border-radius:6px;cursor:grab;touch-action:none}#view3d:active{cursor:grabbing}.viewTools{display:flex;gap:7px;justify-content:space-between;align-items:center;color:#8e9ba9;font-size:10px;padding:7px 3px 2px}.viewTools button{background:#1a232d;border:1px solid #364457;border-radius:5px;color:#c6d9ec;padding:4px 8px;font-size:10px}.mapwrap{padding:4px 9px 9px}.mapwrap canvas{width:100%;height:224px;display:block;border:1px solid #2e3d4d;border-radius:6px;cursor:crosshair;touch-action:none;background:#0a141d}
+.positionHeader{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:3px}.positionColHeader{display:flex;align-items:center;gap:6px;justify-content:center;border-radius:7px;font-size:12px;font-weight:750;padding:2px 0}.sDot,.mDot{display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;width:23px;height:23px;border-radius:50%;color:white;background:#e34f52;box-shadow:0 0 9px #ed545559}.mDot{background:#2477c8;box-shadow:0 0 9px #3c8de959}.positionColHeader:first-child{color:#ffada6}.positionColHeader:last-child{color:#a6d6ff}.coordGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.coordGroup .rowfield{display:flex;align-items:center;gap:5px;margin:8px 0 0}.coordGroup .fieldtop{display:flex;align-items:center;gap:4px;margin:0;min-width:93px;flex:0 0 93px}.coordGroup .fieldtop label{font-size:10px;color:#a9b6c7;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:55px}.coordGroup .fieldtop output{font-size:10px;min-width:34px;text-align:right;color:#f3d0a1}.coordGroup input[type=range]{flex:1;min-width:28px;margin:0}.positionCard .cardBody{padding-top:2px}.positionAfter{display:grid;grid-template-columns:1.05fr .95fr;gap:9px;margin-top:14px;align-items:end}.positionAfter .rowfield{margin:0}.positionAfter .fieldtop{font-size:10px}.positionAfter select{font-size:11px}.extra{border-top:1px solid #2d3845;margin-top:10px}.extra summary{padding:8px 0;font-size:11px}.extraBody{padding:4px 0 8px}.extraBody .hint{line-height:1.4}
+.hallCard .cardBody{padding-top:5px}.hallRows{display:flex;flex-direction:column;gap:12px;margin-top:9px}.hallRow{display:grid;grid-template-columns:140px minmax(70px,1fr) 84px;align-items:center;gap:10px;font-size:12px}.hallRow label{color:#d8e0e7}.hallRow output{text-align:right;color:#ffdda2;font-variant-numeric:tabular-nums;font-size:11px}.hallRow input{margin:0;min-width:0}.quickStats{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 14px}.quickStat{border-radius:6px;border:1px solid #3c4247;background:#161b23;color:#bbcad8;padding:7px 9px;font-size:11px}.quickStat b{color:#f3bf72}.hallPreview{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:7px;margin-top:17px;border-top:1px solid #303946;padding-top:12px}.hallPreview select{min-width:0}.hallPreview button{padding:7px 10px}.signalbox{padding:9px;border:1px solid #34445c;border-radius:7px;background:#141b28;color:#aebccd;font-size:10px;line-height:1.5}
+.materialsCard .cardBody{padding-top:0}.materialsCard .fieldtop{margin-bottom:6px}.materialRow{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-areas:'name cols' 'name info' 'name slider';column-gap:7px;padding:6px 0;border-bottom:1px solid #2d3440}.materialRow strong{grid-area:name;align-self:center;color:#d4dce7;font-size:11px}.materialCols{grid-area:cols;display:grid;grid-template-columns:1fr 1fr;gap:5px;min-width:0}.materialCols select{width:100%;min-width:0;padding:4px 3px;font-size:10px}.mixHead{grid-area:info;display:flex;justify-content:space-between;color:#8493a9;font-size:9px;margin:4px 0 0}.mixHead output{color:#e2bc81}.materialRow input[type=range]{grid-area:slider;margin:6px 0 1px}
+.orchCard .cardBody{padding-top:2px}#orchestraPreview{display:block;width:100%;height:112px;border:1px solid #364053;border-radius:7px;background:#0a121b;margin:7px 0}.orchCard select{margin-top:5px}.orchkey{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0}.orchkey span{display:flex;align-items:center;gap:4px;font-size:10px;color:#b2bdca}.orchkey i{width:8px;height:8px;border-radius:100%;flex:0 0 8px}.orchCard .extraBody select{margin-top:4px}
+.exportCard .cardBody{display:flex;flex-direction:column;gap:8px}.exportMain{padding:10px 0 5px}.exportMain .mainbtn{font-size:14px;min-height:44px}.exportInfo{display:flex;justify-content:space-between;gap:5px;color:#d4dce8;font-size:11px}#wave{width:100%;height:62px;background:#09101c;border:1px solid #334053;border-radius:7px}.status{font-size:10.5px;line-height:1.5;color:#9bb0c6;min-height:30px}.status.error{color:#ff9e95}.exportCard .rowfield{margin:7px 0}.exportCard .buttonsrow{grid-template-columns:1fr 1fr}.exportCard .subtle{margin-bottom:6px}
+.foot{max-width:1910px;margin:2px auto 15px;color:#728396;font-size:10px;padding:0 16px}
+@media(min-width:1500px){.layout{grid-template-columns:292px minmax(0,1fr)}#view3d,.mapwrap canvas{height:245px}.hallRows{gap:16px}.coordGroup .rowfield{margin:10px 0}.materialRow{padding:8px 0}}
+@media(max-width:1440px){.layout{grid-template-columns:245px minmax(0,1fr)}.workspace{grid-template-columns:minmax(300px,1.1fr) minmax(310px,1fr)}.bottomRow{grid-template-columns:minmax(300px,1fr) minmax(230px,.8fr) minmax(215px,.7fr)}.coordGroup .fieldtop{min-width:67px;flex-basis:67px}.coordGroup .fieldtop label{max-width:26px}.hallRow{grid-template-columns:105px 1fr 65px}}
+@media(max-width:1150px){.layout{grid-template-columns:1fr}.leftRail{display:grid;grid-template-columns:1fr 1fr}.workspace{grid-template-columns:1.05fr 1fr}.bottomRow{grid-template-columns:1.2fr .9fr}.exportCard{grid-column:1/-1}.hallRow{grid-template-columns:125px 1fr 65px}}
+@media(max-width:760px){header{height:auto;min-height:66px;padding:8px 12px;flex-wrap:wrap}.brand{font-size:19px}.brand span{font-size:12px}.headright{margin-left:0;width:100%;justify-content:flex-end;gap:4px}.headright .ghostbtn{font-size:10px}.layout{padding:8px;display:flex;flex-direction:column}.leftRail{display:flex;width:100%}.workspace{display:flex;flex-direction:column;width:100%}.workspace>.card,.bottomRow,.bottomRow>.card{width:100%}.bottomRow{display:flex;flex-direction:column}.coordGroup .fieldtop{min-width:84px;flex-basis:84px}.coordGroup .fieldtop label{max-width:46px}#view3d,.mapwrap canvas{height:215px}}
+
+/* Image-1 matching: X / Y / Z, horizontal track, numeric value */
+.coordGroup .rowfield{display:grid;grid-template-columns:15px minmax(25px,1fr) 43px;gap:7px;align-items:center;margin:8px 0 12px}
+.coordGroup .fieldtop{display:contents}
+.coordGroup .fieldtop label{grid-column:1;grid-row:1;min-width:0;font-weight:750;color:#dbe3ec;max-width:none;overflow:visible}
+.coordGroup input[type=range]{grid-column:2;grid-row:1;width:100%;min-width:0}
+.coordGroup .fieldtop output{grid-column:3;grid-row:1;min-width:0;text-align:right;font-size:10px;color:#efe2d3;background:#1b2631;border:1px solid #364251;border-radius:4px;padding:4px 2px}
+#sourceControls input[type=range]::-webkit-slider-thumb{border-color:#ffc06c}
+#micControls input[type=range]{background:linear-gradient(90deg,#245782,#2f8ec7 49%,#2f485f 49%)}
+#micControls input[type=range]::-webkit-slider-thumb{border-color:#6fb8ff}
+#micControls input[type=range]::-moz-range-thumb{border-color:#6fb8ff}
+/* Reduce right export height to mirror Image 1's bottom row */
+.exportCard .exportMain{padding:4px 0 1px}
+.exportCard .cardBody{gap:6px}
+.exportCard .mainbtn{min-height:38px}
+.exportCard .status{min-height:22px;margin:2px 0;font-size:10px}
+.exportCard .exportInfo{font-size:10px}
+.exportCard #wave{height:76px;margin:6px 0}
+
+.micDirection{display:flex;align-items:center;gap:10px;background:#0a111b;border:1px solid #334456;border-radius:8px;padding:7px 10px;margin:7px 0 10px}.micDirectionMain{min-width:0;flex:1}.micDirection #micCompass{width:82px;height:82px;flex:0 0 82px;border-radius:50%;cursor:default}.micDirectionHint{font-size:10px;color:var(--goldBright);margin-top:5px;min-height:15px}.angleTicks{display:flex;justify-content:space-between;font-size:9px;color:#8da2ba;gap:4px;white-space:nowrap}.micDirection input[type=range]{margin:12px 0 8px}.micAimTip{font-size:11px;color:#95bad5}.instrumentQuick{margin-top:7px;border-top:1px solid #283545;padding-top:8px}.instrumentQuick .subtle{margin-bottom:6px}.quickInstruments{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:6px 0}.quickInstruments button{font-size:10.5px;color:#d6e1eb;background:#161f29;border:1px solid #3e4e5d;border-radius:6px;padding:6px 4px}.quickInstruments button.active{color:#121719;background:var(--gold);border-color:var(--goldBright);font-weight:800}.orchCard .instrumentQuick select{padding:6px 7px}
+@media(max-width:690px){.micDirection #micCompass{width:70px;height:70px;flex-basis:70px}}
+
+/* v0.11: Text → Bild → Raum, kompakt in der vorhandenen Textidee-Registerkarte */
+.aiBox{border-top:1px solid #394554;margin-top:13px;padding-top:12px}
+.aiBox h4{margin:0 0 9px;font-size:12px;color:var(--goldBright)}
+.aiBox .aiField{margin:8px 0;font-size:11px;color:#cad7e6}
+.aiBox label{display:block;font-size:11px;color:#bdc9d9;margin-bottom:4px}
+.aiBox input[type=password],.aiBox select{width:100%;padding:8px;border-radius:6px;background:#0d141c;color:#e9eef5;border:1px solid #3a4554;min-width:0;font-size:11px}
+.aiPipe{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:8px 0 10px}
+.aiPipe span{font-size:10px;color:#b8c5d3;border:1px solid #3a4653;background:#111a24;padding:6px 2px;text-align:center;border-radius:6px}
+.aiPipe span.active{border-color:var(--gold);color:var(--goldBright);background:#30261b}
+.aiBox .aiTwo{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.aiBox .aiTwo button{font-size:11px}
+.aiStatus{font-size:11px;line-height:1.5;color:#a9b9c8;border-left:2px solid var(--gold);padding:7px 9px;background:#0b1420;border-radius:3px;margin-top:10px}
+.aiStatus.error{border-color:#ef7979;color:#ffd0ca}
+.aiBox img{width:100%;max-height:200px;object-fit:contain;border:1px solid #465363;border-radius:7px;background:#111925;margin-top:8px}
+.aiBox .aiDisclaimer{font-size:10px;color:#8795a9;line-height:1.5;margin-top:8px}
+
+.hallLibrary{margin:10px 10px 12px;padding:7px 9px;background:#121a23;border:1px solid #415063;border-radius:9px}
+.hallLibrary summary{color:var(--goldBright);cursor:pointer;font-weight:700;font-size:12px;padding:5px 1px}
+.hallLibraryInner{display:flex;flex-direction:column;gap:8px;padding:9px 2px 5px}
+.hallLibraryInner>label{color:#b6c7d7;font-size:11px}
+.hallLibraryInner .mainbtn{margin:2px 0 7px}
+#savedHallList{min-height:37px}
+.aiNetwork{background:#0a1822;border:1px solid #396277;border-radius:8px;color:#c7eafa;padding:7px 9px;margin:9px 0;font-size:11px;line-height:1.4}
+.aiNetwork.bad{background:#2b181b;border-color:#9a5353;color:#ffc7be}
+</style></head><body>
+<header>
+  <div class="logo">≋</div><div class="brand">RaumKlang <strong>IR</strong><span> – Tool ohne KI</span></div>
+  <div class="headright">
+    <label class="themeWrap">Farbschema
+      <select id="themeSelect" title="Farbschema wählen"><option value="gold">Gold (Standard)</option><option value="blue">Ozeanblau</option><option value="teal">Türkis</option><option value="violet">Violett</option><option value="copper">Kupfer</option><option value="emerald">Smaragdgrün</option><option value="rose">Rosé / Rubin</option><option value="iceblue">Eisblau</option><option value="silver">Silber / Graphit</option></select>
+    </label>
+    <button class="ghostbtn" id="saveProject" title="Komplette Halle als Projektdatei exportieren – inklusive KI-Bild">▣ Projekt exportieren</button>
+    <label class="ghostbtn" title="Komplettes Hallenprojekt laden" style="cursor:pointer">▣ Projekt laden<input type="file" id="loadProject" accept=".json,.rkraum,application/json" hidden></label>
+  </div>
+</header>
+<div style="max-width:1910px;margin:12px auto 0;padding:0 16px"><div style="background:#142821;border:1px solid #458266;border-radius:9px;padding:11px 15px;color:#d4f5e3;font-size:13px;line-height:1.5"><strong>✓ Browser-Version ohne Installation und ohne KI</strong> – Raumvorlage wählen oder eine Textidee lokal in Raumgeometrie umwandeln, Akustik einstellen, auf <b>IR berechnen</b> klicken und die Impulsantwort als <b>WAV speichern</b>. Die akustische Simulation läuft direkt in deinem Browser.</div></div>
+<div class="layout">
+<aside class="leftRail">
+  <section class="card"><div class="cardHead"><h3>Vorlagen</h3></div>
+    <div class="tabs" role="tablist"><button type="button" class="tab active" data-tab="presets">Vorlagen</button><button type="button" class="tab" data-tab="upload">Bild laden</button><button type="button" class="tab" data-tab="ideas">Textidee</button></div>
+    <div class="tabpage active" id="tab-presets"><div class="roomList">
+      <button class="roomChoice" data-category="concert" data-preset="concert_vineyard"><span>♬</span>Konzertsaal</button>
+      <button class="roomChoice" data-category="opera" data-preset="opera_horseshoe"><span>♙</span>Opernhaus</button>
+      <button class="roomChoice" data-category="cathedral" data-preset="cathedral"><span>♜</span>Kirche / Kathedrale</button>
+      <button class="roomChoice" data-category="castle" data-preset="castle"><span>♟</span>Burg / Schloss</button>
+      <button class="roomChoice" data-category="dwarf" data-preset="dwarf"><span>⚒</span>Zwergenhalle</button>
+      <button class="roomChoice" data-category="cave" data-preset="cave"><span>◭</span>Höhle / Grotte</button>
+      <button class="roomChoice" data-category="dungeon" data-preset="dungeon"><span>▦</span>Dungeon</button>
+      <button class="roomChoice" data-category="forest" data-preset="forest"><span>♣</span>Waldlichtung</button>
+      <button class="roomChoice" data-category="ice" data-preset="ice"><span>❄</span>Eishöhle</button>
+    </div><p class="hint" id="hintTab" style="margin:7px 10px 11px">Jeder Raum hat vier Grundformen. Wähle links eine Kategorie und darunter ihre Form.</p></div>
+    <div class="tabpage" id="tab-upload" style="padding:8px 12px 14px"><label class="filedrop">⬆<strong>Bild auswählen oder ablegen</strong><span class="subtle">JPG · PNG · WEBP</span><input id="imageUpload" type="file" accept="image/jpeg,image/png,image/webp"></label><img class="previewimg" id="uploadedPreview" alt="Hochgeladenes Raumbild"><p class="hint" id="imageStatus">Lade ein Bild und starte die automatische Rekonstruktion oder übernimm sie direkt.</p></div>
+    <div class="tabpage" id="tab-ideas" style="padding:8px 12px 14px"><label class="subtle" for="fantasyPrompt">Beschreibe deinen Fantasy-Ort</label><textarea id="fantasyPrompt" rows="5" placeholder="Eine 100 Meter lange Zwergenhalle aus Granit ...">Eine riesige Zwergenhalle aus Granit mit mächtigen Säulen und einer 30 Meter hohen Decke.</textarea><div class="aiField" style="margin:9px 0 6px"><label for="textShapeChoice">Grundform aus Beschreibung</label><select id="textShapeChoice" class="choose">
+<option value="auto">Automatisch aus dem Text erkennen</option>
+<option value="hexagon">Sechseck · 6 Wände</option><option value="octagon">Achteck · 8 Wände</option><option value="pentagon">Fünfeck · 5 Wände</option><option value="triangle">Dreieck · 3 Wände</option>
+<option value="rect">Rechteck · 4 Wände</option><option value="round">Rundsaal</option><option value="oval">Ovaler Saal</option><option value="cross">Kreuzförmig</option><option value="lwing">L-förmig</option><option value="fan">Fächerförmig</option><option value="horseshoe">Hufeisenförmig</option>
+</select><div id="textShapeRecognized" class="hint" style="margin-top:5px;color:#f1d198">Erkannte Grundform wird hier angezeigt.</div></div>
+<button class="mainbtn" id="createConcept" style="margin-top:8px">Text → 3D-Raum übernehmen</button><img class="previewimg" id="generatedPreview" alt="Lokale Konzeptskizze"><p class="hint" id="conceptStatus">Mit „Text → 3D-Raum übernehmen“ erzeugst du weiter eine lokale Konzeptskizze. Echte KI-Bilder benötigen ComfyUI oder eine OpenAI-API-Verbindung.</p>
+</div>
+<details id="hallLibrary" class="hallLibrary">
+      <summary>▣ Meine Hallen · speichern und laden</summary>
+      <div class="hallLibraryInner">
+        <label for="hallName">Name deiner Halle</label>
+        <input id="hallName" type="text" placeholder="z. B. Zwergenhalle aus Granit" maxlength="100">
+        <button id="saveHallLocal" class="mainbtn" type="button">Halle in Bibliothek speichern</button>
+        <label for="savedHallList">Gespeicherte Hallen</label>
+        <select id="savedHallList" class="choose"><option value="">Noch keine Hallen gespeichert</option></select>
+        <div class="aiTwo"><button id="loadHallLocal" class="smbtn" type="button">Auswahl laden</button><button id="deleteHallLocal" class="smbtn" type="button">Auswahl löschen</button></div>
+        <p id="hallLibraryStatus" class="hint">Die Bibliothek wird lokal im Browser gespeichert. Nutze „Projekt exportieren“ oben für ein vollständiges Backup mit Bild.</p>
+      </div>
+    </details>
+  </section>
+  <section class="card"><div class="cardHead"><h3 id="formTitle">Saalform · Konzertsaal</h3></div>
+    <div class="formContent"><div id="shapeGroups"><div class="shapeGrid" id="concertShapes" hidden><button class="shapeOption" data-preset="concert_shoebox"><span class="shapeIcon">▭</span>Rechteck</button><button class="shapeOption" data-preset="concert_vineyard"><span class="shapeIcon">⬡</span>Weinberg</button><button class="shapeOption" data-preset="concert_fan"><span class="shapeIcon">◢</span>Fächer</button><button class="shapeOption" data-preset="concert_round"><span class="shapeIcon">◯</span>Rundbau</button></div><div class="shapeGrid" id="operaShapes" hidden><button class="shapeOption" data-preset="opera_horseshoe"><span class="shapeIcon">∩</span>Hufeisen</button><button class="shapeOption" data-preset="opera_italian"><span class="shapeIcon">♙</span>Rangsaal</button><button class="shapeOption" data-preset="opera_fan"><span class="shapeIcon">◢</span>Fächer</button><button class="shapeOption" data-preset="opera_oval"><span class="shapeIcon">⬭</span>Oval</button></div><div class="shapeGrid" id="cathedralShapes" hidden><button class="shapeOption" data-preset="cathedral"><span class="shapeIcon">▤</span>Basilika</button><button class="shapeOption" data-preset="church_cross"><span class="shapeIcon">✝</span>Kreuzkirche</button><button class="shapeOption" data-preset="church_hall"><span class="shapeIcon">▭</span>Hallenkirche</button><button class="shapeOption" data-preset="church_rotunda"><span class="shapeIcon">◯</span>Rundkirche</button></div><div class="shapeGrid" id="castleShapes" hidden><button class="shapeOption" data-preset="castle"><span class="shapeIcon">▭</span>Großer Rittersaal</button><button class="shapeOption" data-preset="castle_tower"><span class="shapeIcon">⬡</span>Achteck-Turmsaal</button><button class="shapeOption" data-preset="castle_court"><span class="shapeIcon">◫</span>Burghof</button><button class="shapeOption" data-preset="castle_l"><span class="shapeIcon">⌜</span>L-förmiger Burgtrakt</button></div><div class="shapeGrid" id="dwarfShapes" hidden><button class="shapeOption" data-preset="dwarf"><span class="shapeIcon">▤</span>Säulenhalle</button><button class="shapeOption" data-preset="dwarf_oct"><span class="shapeIcon">⬡</span>Achteckhalle</button><button class="shapeOption" data-preset="dwarf_gallery"><span class="shapeIcon">▥</span>Stollen-Galerie</button><button class="shapeOption" data-preset="dwarf_forge"><span class="shapeIcon">✣</span>Große Schmiede</button></div><div class="shapeGrid" id="caveShapes" hidden><button class="shapeOption" data-preset="cave"><span class="shapeIcon">◉</span>Tropfsteinhöhle</button><button class="shapeOption" data-preset="cave_split"><span class="shapeIcon">♜</span>Verzweigte Grotte</button><button class="shapeOption" data-preset="cave_rift"><span class="shapeIcon">⧉</span>Felsspalte</button><button class="shapeOption" data-preset="cave_lake"><span class="shapeIcon">⬭</span>Unterirdischer See</button></div><div class="shapeGrid" id="dungeonShapes" hidden><button class="shapeOption" data-preset="dungeon"><span class="shapeIcon">▭</span>Steinkorridor</button><button class="shapeOption" data-preset="dungeon_l"><span class="shapeIcon">⌜</span>Winkelgang</button><button class="shapeOption" data-preset="dungeon_t"><span class="shapeIcon">⊤</span>T-Kreuzung</button><button class="shapeOption" data-preset="dungeon_crypt"><span class="shapeIcon">✣</span>Krypta</button></div><div class="shapeGrid" id="forestShapes" hidden><button class="shapeOption" data-preset="forest"><span class="shapeIcon">◯</span>Offene Lichtung</button><button class="shapeOption" data-preset="forest_long"><span class="shapeIcon">⬭</span>Lange Waldwiese</button><button class="shapeOption" data-preset="forest_grove"><span class="shapeIcon">◉</span>Verwunschener Hain</button><button class="shapeOption" data-preset="forest_gorge"><span class="shapeIcon">⌁</span>Waldschlucht</button></div><div class="shapeGrid" id="iceShapes" hidden><button class="shapeOption" data-preset="ice"><span class="shapeIcon">◉</span>Große Eishöhle</button><button class="shapeOption" data-preset="ice_tunnel"><span class="shapeIcon">▱</span>Gletschertunnel</button><button class="shapeOption" data-preset="ice_dome"><span class="shapeIcon">◯</span>Eisdom</button><button class="shapeOption" data-preset="ice_crystal"><span class="shapeIcon">✣</span>Kristallkammer</button></div></div><p class="shapeless" id="formNote" hidden>Wähle eine Raumform aus.</p></div>
+  </section>
+  <section class="card"><details class="fold"><summary>Raummaße anpassen</summary><div>
+    <div class="rowfield"><div class="fieldtop"><label for="length">Länge</label><output id="outLength">56 m</output></div><input id="length" type="range" min="6" max="160" step="1" value="56"></div>
+    <div class="rowfield"><div class="fieldtop"><label for="width">Breite</label><output id="outWidth">48 m</output></div><input id="width" type="range" min="5" max="110" step="1" value="48"></div>
+    <div class="rowfield"><div class="fieldtop"><label for="height">Höhe</label><output id="outHeight">24 m</output></div><input id="height" type="range" min="3" max="75" step="1" value="24"></div>
+  </div></details></section>
+</aside>
+<main class="workspace">
+  <section class="card viewCard"><div class="cardHead"><h3>3D-Ansicht</h3><small id="roomHeading">Konzertsaal · Weinbergterrassen</small></div><div class="viewContent">
+    <canvas id="view3d" aria-label="Interaktive 3D-Ansicht"></canvas><div class="viewTools"><span>Mit Maus drehen · Mausrad zoomen</span><button id="resetCamera">Ansicht zurücksetzen</button></div>
+  </div></section>
+  <section class="card planCard"><div class="cardHead"><h3>Grundriss &amp; Positionen</h3><small>Schallquelle <b style="color:#f87575">●</b> &nbsp; Mikrofon <b style="color:#6fbeff">●</b></small></div><div class="micAimTip" style="padding:0 10px">Blauen Richtungspfeil am orange markierten Griff drehen.</div><div class="mapwrap"><canvas id="plan" aria-label="Interaktiver Grundriss: Mikrofonspitze drehen, rote und blaue Marker verschieben"></canvas></div></section>
+  <section class="card positionCard"><div class="cardHead"><h3>04 · Quelle und Mikrofon</h3><small>Alle Positionsregler</small></div><div class="cardBody">
+    <div class="positionHeader"><div class="positionColHeader"><span class="sDot">S</span>Schallquelle</div><div class="positionColHeader"><span class="mDot">M</span>Mikrofon</div></div>
+    <div class="coordGrid"><div class="coordGroup" id="sourceControls"></div><div class="coordGroup" id="micControls"></div></div>
+    <div class="positionAfter">
+      <div class="micDirection"><div class="micDirectionMain"><div class="fieldtop"><label for="micAngle">Mikrofon-Blickrichtung</label><output id="outMicAngle">0°</output></div><input id="micAngle" type="range" min="-180" max="180" step="1" value="0"><div class="angleTicks"><span>−180°</span><span>0° · Bühne →</span><span>+180°</span></div><div class="micDirectionHint" id="micDirectionHint">→ Zur Bühne · Pfeil im Grundriss drehen</div></div><canvas id="micCompass" width="98" height="98" aria-label="Grafische Mikrofonrichtung"></canvas></div>
+      <div><label for="micPreset" class="subtle">Mikrofon-Preset</label><select class="choose" id="micPreset"></select></div>
+    </div>
+    <details class="extra"><summary>Eigene Mikrofonposition speichern</summary><div class="extraBody"><p class="hint">Voreinstellungen wie Decca Tree sind einzelne Punktpositionen, keine echte Mehrmikrofon-Simulation.</p><div class="saveLine"><input type="text" id="micPresetName" maxlength="70" placeholder="Name der Mikrofonposition"><button id="saveMicPreset" class="smbtn">Speichern</button></div></div></details>
+  </div></section>
+  <section class="card hallCard"><div class="cardHead"><h3>05 · Hallcharakter (Klangbild)</h3><small>Einfach einstellen</small></div><div class="cardBody">
+    <div class="quickStats"><span class="quickStat">Nachhall: <b id="rt60">–</b></span><span class="quickStat">Volumen: <b id="volume">–</b></span></div>
+    <div class="hallRows">
+      <div class="hallRow"><label for="damping">Nachhallzeit</label><input id="damping" type="range" min="30" max="220" step="5" value="100"><output id="outDamping">Normal</output></div>
+      <div class="hallRow"><label for="diffusion">Klarheit / Weichheit</label><input id="diffusion" type="range" min="0" max="100" step="5" value="55"><output id="outDiffusion">Mittel</output></div>
+      <div class="hallRow"><label for="wet">Hallanteil (Test)</label><input id="wet" type="range" min="0" max="100" step="5" value="70"><output id="outWet">70 %</output></div>
+    </div>
+    <div class="hallPreview"><select class="choose" id="testSound" aria-label="Testklang"><option value="choir">Chorakkord</option><option value="bell">Metallglocke</option><option value="percussion">Tiefe Trommel</option><option value="click">Impuls / Klatschen</option></select><button id="listen" class="smbtn">▶ Test</button><button id="stopSound" class="smbtn">■ Stopp</button></div>
+    <details class="extra"><summary>Testklang &amp; akustische Messwerte</summary><div class="extraBody"><div class="keyline"><span>Schallquelle zum Mikrofon</span><b id="distance">–</b></div><div class="keyline"><span>Erste Schallankunft</span><b id="arrival">–</b></div><label class="filedrop" style="min-height:52px;margin-top:9px">Eigene Musikdatei zum Probehören laden<input type="file" id="audioUpload" accept="audio/*"></label><p class="hint" id="audioStatus">Ohne Datei wird ein Testklang erzeugt.</p></div></details>
+  </div></section>
+  <div class="bottomRow">
+    <section class="card materialsCard"><div class="cardHead"><h3>03 · Oberflächen (Materialmischung)</h3></div><div class="cardBody"><div class="rowfield"><label class="subtle" for="materialProfile">Typisches Raumprofil</label><select class="choose" id="materialProfile"><option value="custom">Eigene Materialmischung</option><option value="default">Nur Stein</option><option value="dungeon">Typischer Dungeon</option><option value="church">Typische Kirche</option><option value="concert_empty">Konzertsaal – leer</option><option value="concert_full">Konzertsaal – mit Publikum</option><option value="opera_empty">Opernhaus – leer</option><option value="opera_full">Opernhaus – mit Publikum</option><option value="halfwood">50 % Holz / 50 % Stein</option><option value="forest">Wald / freier Himmel</option></select></div><div id="materialMixer"></div></div></section>
+    <section class="card orchCard"><div class="cardHead"><h3>Orchesteraufstellung</h3></div><div class="cardBody">
+      <label class="subtle" for="orchestraLayouts">Aufstellung wählen</label><select class="choose" id="orchestraLayouts"></select>
+      <canvas id="orchestraPreview" aria-label="Orchestergruppen von vorne bis hinten"></canvas>
+      <div class="orchkey"><span><i style="background:#edc17e"></i>Streicher vorn</span><span><i style="background:#8fc2a6"></i>Holzbläser</span><span><i style="background:#a6b2eb"></i>Blech</span><span><i style="background:#d5a2b9"></i>Schlagwerk hinten</span></div>
+      <div class="instrumentQuick"><div class="subtle">Instrument direkt auswählen und mit den Positionsreglern bewegen:</div><div class="quickInstruments" id="quickInstruments"><button type="button" data-instrument="v1">1. Violinen</button><button type="button" data-instrument="v2">2. Violinen</button><button type="button" data-instrument="va">Bratschen</button><button type="button" data-instrument="vc">Celli</button></div><select class="choose" id="instrumentSelect" aria-label="Weitere Instrumente wählen"></select></div>
+      <details class="extra"><summary>Aufstellung bearbeiten &amp; speichern</summary><div class="extraBody"><p class="hint" id="orchestraInfo">Wähle ein Instrument und platziere es im Grundriss.</p><div class="saveLine"><input type="text" id="orchestraName" maxlength="70" placeholder="Name der Aufstellung"><button id="saveOrchestra" class="smbtn">Speichern</button></div><p class="hint" id="layoutStatus">Sitzordnung verändern: Positionen im Grundriss verschieben.</p></div></details>
+    </div></section>
+    <section class="card exportCard"><div class="cardHead"><h3>Impulsantwort exportieren</h3></div><div class="cardBody">
+      <div class="exportMain"><button class="mainbtn" id="generate">✧ IR berechnen</button></div>
+      <div class="exportInfo"><span>WAV · 48 kHz / 24 Bit</span><span class="accent">Cubase</span></div>
+      <select class="choose" id="format"><option value="stereo">Stereo · Cubase REVerence</option><option value="foa">Ambisonics FOA · 4-Kanal experimentell</option></select>
+      <button class="mainbtn" id="download" disabled>↓ WAV speichern</button>
+      <p class="status" id="status">Bereit. Berechne deine erste Impulsantwort.</p>
+      <details class="extra"><summary>Export-Einstellungen &amp; Wellenform</summary><div class="extraBody"><canvas id="wave" aria-label="Darstellung der Impulsantwort"></canvas><div class="rowfield"><div class="fieldtop"><label for="duration">Maximale WAV-Länge</label><output id="outDuration">10 s</output></div><input id="duration" type="range" min="2" max="14" step="1" value="10"></div><div class="signalbox">Simulation mit vereinfachtem Reflexionsmodell. 4-Kanal-WAV benötigt einen Ambisonics-Decoder und enthält keine Ambisonics-Metadaten.</div></div></details>
+    </div></section>
+  </div>
+</main></div>
+<div class="foot">RaumKlang IR · Browser-Version ohne KI und ohne Installation · IR-Berechnung mit vereinfachtem akustischem Näherungsmodell.</div>
+<script>
+'use strict';
+// RaumKlang AI v0.11. Grundfunktionen im Browser; externe Bild-KI nur nach ausdruecklichem Klick ueber lokalen Python-Server.
+const $=id=>document.getElementById(id);
+const PRESETS={
+ dungeon:{title:'Dungeon · Verwinkelte Steinräume',w:28,l:53,h:7,walls:'stone',floor:'earth',ceiling:'stone',color:'#988a73',src:[14,1.5,10],mic:[14,1.8,37],damp:115,shape:'rect',mixKey:'dungeon'},
+ cathedral:{title:'Die große Kathedrale',w:32,l:75,h:32,walls:'stone',floor:'stone',ceiling:'stone',color:'#8e98a4',src:[16,3,18],mic:[16,1.8,58],damp:100},
+ dwarf:{title:'Zwergenhalle der Bergkönige',w:48,l:105,h:30,walls:'stone',floor:'stone',ceiling:'stone',color:'#a18d75',src:[24,5,22],mic:[24,2,78],damp:120},
+ cave:{title:'Die tiefe Tropfsteinhöhle',w:35,l:63,h:23,walls:'earth',floor:'stone',ceiling:'earth',color:'#7f939e',src:[9,2,15],mic:[25,1.9,44],damp:120},
+ castle:{title:'Großer mittelalterlicher Burgsaal',w:18,l:37,h:13,walls:'stone',floor:'wood',ceiling:'wood',color:'#ae9574',src:[9,2,9],mic:[9,1.7,28],damp:90},
+ forest:{title:'Waldlichtung unter freiem Himmel',w:55,l:74,h:28,walls:'open',floor:'earth',ceiling:'open',color:'#5b917b',src:[18,1.7,18],mic:[34,1.7,47],damp:35},
+ ice:{title:'Große Eishöhle',w:32,l:58,h:24,walls:'ice',floor:'ice',ceiling:'ice',color:'#7ebbd4',src:[15,2.5,12],mic:[20,1.9,43],damp:115},
+ concert_shoebox:{title:'Konzertsaal · Klassischer Rechtecksaal',w:26,l:48,h:19,walls:'plaster',floor:'wood',ceiling:'plaster',color:'#c6aa82',src:[13,1.5,9],mic:[13,3,21],damp:100,shape:'rect',mixKey:'concert_empty'},
+ concert_vineyard:{title:'Konzertsaal · Weinbergterrassen',w:32,l:48,h:18,walls:'wood',floor:'wood',ceiling:'plaster',color:'#c49a6b',src:[16,2.2,9],mic:[16,3.2,33],damp:105,shape:'vineyard',mixKey:'concert_full'},
+ concert_fan:{title:'Konzertsaal · Fächerform',w:46,l:58,h:22,walls:'wood',floor:'wood',ceiling:'plaster',color:'#b89f85',src:[23,1.6,8],mic:[23,3.5,29],damp:105,shape:'fan',mixKey:'concert_empty'},
+ concert_round:{title:'Konzertsaal · Rundbau / Arena',w:60,l:60,h:24,walls:'wood',floor:'wood',ceiling:'plaster',color:'#bca884',src:[30,2.5,15],mic:[30,4.0,31],damp:100,shape:'round',mixKey:'concert_full'},
+ opera_horseshoe:{title:'Opernhaus · Klassisches Hufeisen',w:32,l:43,h:21,walls:'plaster',floor:'wood',ceiling:'plaster',color:'#bfa18c',src:[16,1.7,8],mic:[16,3.0,22],damp:95,shape:'horseshoe',mixKey:'opera_full'},
+ opera_italian:{title:'Opernhaus · Italienischer Rangsaal',w:31,l:47,h:23,walls:'plaster',floor:'wood',ceiling:'plaster',color:'#bca489',src:[15.5,1.5,8],mic:[15.5,3.0,24],damp:100,shape:'italian',mixKey:'opera_empty'},
+ opera_fan:{title:'Opernhaus · Breiter Fächersaal',w:49,l:52,h:19,walls:'wood',floor:'wood',ceiling:'plaster',color:'#bda47f',src:[24.5,1.6,8],mic:[24.5,3.0,27],damp:95,shape:'fan',mixKey:'opera_full'},
+ opera_oval:{title:'Opernhaus · Ovaler Zuschauerraum',w:42,l:54,h:22,walls:'plaster',floor:'wood',ceiling:'plaster',color:'#c4a07e',src:[21,1.5,12],mic:[21,3.0,27],damp:95,shape:'oval',mixKey:'opera_empty'}
+};
+const EXTRA_ROOM_PRESETS={"church_cross": {"title": "Kirche · Kreuzkirche", "w": 42, "l": 78, "h": 34, "walls": "stone", "floor": "stone", "ceiling": "plaster", "color": "#9da2a9", "damp": 100, "shape": "cross", "mixKey": "church"}, "church_hall": {"title": "Kirche · Hallenkirche", "w": 38, "l": 64, "h": 25, "walls": "stone", "floor": "stone", "ceiling": "plaster", "color": "#9da2a9", "damp": 100, "shape": "apse", "mixKey": "church"}, "church_rotunda": {"title": "Kirche · Rundkirche", "w": 46, "l": 46, "h": 31, "walls": "stone", "floor": "stone", "ceiling": "plaster", "color": "#9da2a9", "damp": 100, "shape": "round", "mixKey": "church"}, "castle_tower": {"title": "Burg · Achteck-Turmsaal", "w": 26, "l": 26, "h": 20, "walls": "stone", "floor": "wood", "ceiling": "wood", "color": "#ab947e", "damp": 88, "shape": "octagon", "mixKey": "castle"}, "castle_court": {"title": "Burg · Burghof", "w": 52, "l": 56, "h": 13, "walls": "stone", "floor": "wood", "ceiling": "wood", "color": "#ab947e", "damp": 88, "shape": "courtyard", "mixKey": "courtyard"}, "castle_l": {"title": "Burg · L-förmiger Burgtrakt", "w": 35, "l": 52, "h": 16, "walls": "stone", "floor": "wood", "ceiling": "wood", "color": "#ab947e", "damp": 88, "shape": "lwing", "mixKey": "castle"}, "dwarf_oct": {"title": "Zwergenhalle · Achteckhalle", "w": 54, "l": 54, "h": 33, "walls": "stone", "floor": "stone", "ceiling": "stone", "color": "#a18d75", "damp": 115, "shape": "octagon", "mixKey": "dwarf"}, "dwarf_gallery": {"title": "Zwergenhalle · Stollen-Galerie", "w": 24, "l": 115, "h": 17, "walls": "stone", "floor": "stone", "ceiling": "stone", "color": "#a18d75", "damp": 115, "shape": "corridor", "mixKey": "dwarf"}, "dwarf_forge": {"title": "Zwergenhalle · Große Schmiede", "w": 62, "l": 90, "h": 25, "walls": "stone", "floor": "stone", "ceiling": "stone", "color": "#a18d75", "damp": 115, "shape": "cross", "mixKey": "forge"}, "cave_split": {"title": "Höhle · Verzweigte Grotte", "w": 62, "l": 70, "h": 22, "walls": "earth", "floor": "stone", "ceiling": "earth", "color": "#80919e", "damp": 122, "shape": "cross", "mixKey": "cave"}, "cave_rift": {"title": "Höhle · Felsspalte", "w": 18, "l": 88, "h": 35, "walls": "earth", "floor": "stone", "ceiling": "earth", "color": "#80919e", "damp": 122, "shape": "corridor", "mixKey": "cave"}, "cave_lake": {"title": "Höhle · Unterirdischer See", "w": 64, "l": 80, "h": 27, "walls": "earth", "floor": "stone", "ceiling": "earth", "color": "#80919e", "damp": 122, "shape": "oval", "mixKey": "lake"}, "dungeon_l": {"title": "Dungeon · Winkelgang", "w": 44, "l": 68, "h": 6, "walls": "stone", "floor": "earth", "ceiling": "stone", "color": "#988a73", "damp": 110, "shape": "lwing", "mixKey": "dungeon"}, "dungeon_t": {"title": "Dungeon · T-Kreuzung", "w": 45, "l": 63, "h": 7, "walls": "stone", "floor": "earth", "ceiling": "stone", "color": "#988a73", "damp": 110, "shape": "tbranch", "mixKey": "dungeon"}, "dungeon_crypt": {"title": "Dungeon · Krypta", "w": 45, "l": 58, "h": 11, "walls": "stone", "floor": "earth", "ceiling": "stone", "color": "#988a73", "damp": 110, "shape": "cross", "mixKey": "crypt"}, "forest_long": {"title": "Wald · Lange Waldwiese", "w": 40, "l": 85, "h": 29, "walls": "open", "floor": "earth", "ceiling": "open", "color": "#638a74", "damp": 35, "shape": "oval", "mixKey": "forest"}, "forest_grove": {"title": "Wald · Verwunschener Hain", "w": 70, "l": 70, "h": 32, "walls": "open", "floor": "earth", "ceiling": "open", "color": "#638a74", "damp": 35, "shape": "organic", "mixKey": "forest"}, "forest_gorge": {"title": "Wald · Waldschlucht", "w": 30, "l": 90, "h": 45, "walls": "open", "floor": "earth", "ceiling": "open", "color": "#638a74", "damp": 35, "shape": "corridor", "mixKey": "gorge"}, "ice_tunnel": {"title": "Eishöhle · Gletschertunnel", "w": 20, "l": 90, "h": 17, "walls": "ice", "floor": "ice", "ceiling": "ice", "color": "#8ac1d5", "damp": 115, "shape": "corridor", "mixKey": "ice"}, "ice_dome": {"title": "Eishöhle · Eisdom", "w": 58, "l": 58, "h": 38, "walls": "ice", "floor": "ice", "ceiling": "ice", "color": "#8ac1d5", "damp": 115, "shape": "round", "mixKey": "ice"}, "ice_crystal": {"title": "Eishöhle · Kristallkammer", "w": 47, "l": 47, "h": 34, "walls": "ice", "floor": "ice", "ceiling": "ice", "color": "#8ac1d5", "damp": 115, "shape": "star", "mixKey": "ice"}};
+Object.assign(PRESETS,EXTRA_ROOM_PRESETS);
+// Standardpositionen für sämtliche zusätzlichen Räume: innerhalb der Grundfläche.
+for(const p of Object.values(EXTRA_ROOM_PRESETS)){
+  p.src=[p.w*.5,Math.max(1.4,Math.min(2.2,p.h*.12)),p.l*.28];
+  p.mic=[p.w*.5,Math.max(1.6,Math.min(3,p.h*.15)),p.l*.70];
+}
+// Auch die bisherigen Ausgangsräume bekommen einen eindeutig benannten Grundriss.
+Object.assign(PRESETS.cathedral,{shape:'rect',mixKey:'church',title:'Kirche · Basilika'});
+Object.assign(PRESETS.castle,{shape:'rect',mixKey:'castle',title:'Burg · Großer Rittersaal'});
+Object.assign(PRESETS.dwarf,{shape:'rect',mixKey:'dwarf',title:'Zwergenhalle · Säulenhalle'});
+Object.assign(PRESETS.cave,{shape:'organic',mixKey:'cave',title:'Höhle · Tropfsteinhöhle'});
+Object.assign(PRESETS.dungeon,{shape:'rect',mixKey:'dungeon',title:'Dungeon · Steinkorridor'});
+Object.assign(PRESETS.forest,{shape:'round',mixKey:'forest',title:'Wald · Offene Lichtung'});
+Object.assign(PRESETS.ice,{shape:'organic',mixKey:'ice',title:'Eishöhle · Große Eishöhle'});
+const MATERIALS={stone:{a:.10,color:'#8c929e'},wood:{a:.23,color:'#aa805d'},metal:{a:.045,color:'#8598ae'},ice:{a:.045,color:'#91c5df'},earth:{a:.27,color:'#797a6c'},carpet:{a:.68,color:'#815f72'},open:{a:.97,color:'#546b6c'},plaster:{a:.13,color:'#c1b9ac'},brick:{a:.11,color:'#9e695f'},marble:{a:.06,color:'#b9bcb9'},concrete:{a:.09,color:'#87919b'},glass:{a:.06,color:'#8bb1bf'},curtain:{a:.62,color:'#856b83'},seats:{a:.36,color:'#886e64'},audience:{a:.73,color:'#7f7474'},foliage:{a:.52,color:'#637f62'},sand:{a:.48,color:'#a49576'},water:{a:.04,color:'#6593a0'}};
+const state={preset:'cathedral',w:32,l:75,h:32,walls:'stone',floor:'stone',ceiling:'stone',color:'#8e98a4',source:{x:16,y:3,z:18},mic:{x:16,y:1.8,z:58},micAngle:0,damp:100,diffusion:55,wet:70,duration:10,format:'stereo',yaw:-0.65,pitch:.43,zoom:1.0,image:null,generated:null,ir:null,irMode:null,sampleRate:48000,audioData:null,audioCtx:null,playNodes:[],viewDirty:true};
+
+const MIX_PRESETS={
+  castle:{walls:[['stone',75],['wood',25]],floor:[['wood',75],['stone',25]],ceiling:[['wood',75],['plaster',25]]},
+  courtyard:{walls:[['stone',90],['brick',10]],floor:[['stone',50],['earth',50]],ceiling:[['open',100]]},
+  dwarf:{walls:[['stone',90],['metal',10]],floor:[['stone',85],['earth',15]],ceiling:[['stone',95],['metal',5]]},
+  forge:{walls:[['stone',70],['metal',30]],floor:[['stone',75],['metal',25]],ceiling:[['stone',75],['metal',25]]},
+  cave:{walls:[['stone',45],['earth',55]],floor:[['stone',70],['earth',30]],ceiling:[['stone',55],['earth',45]]},
+  lake:{walls:[['stone',75],['earth',25]],floor:[['water',65],['stone',35]],ceiling:[['stone',90],['earth',10]]},
+  crypt:{walls:[['stone',75],['marble',25]],floor:[['stone',65],['marble',35]],ceiling:[['stone',100]]},
+  gorge:{walls:[['stone',55],['foliage',45]],floor:[['earth',75],['foliage',25]],ceiling:[['open',100]]},
+  ice:{walls:[['ice',90],['stone',10]],floor:[['ice',75],['stone',25]],ceiling:[['ice',100]]},
+ default:{walls:[['stone',100]],floor:[['stone',100]],ceiling:[['stone',100]]},
+ dungeon:{walls:[['stone',65],['earth',35]],floor:[['stone',55],['earth',45]],ceiling:[['stone',70],['earth',30]]},
+ church:{walls:[['stone',65],['glass',35]],floor:[['stone',75],['wood',25]],ceiling:[['stone',75],['wood',25]]},
+ concert_empty:{walls:[['wood',55],['plaster',45]],floor:[['wood',75],['seats',25]],ceiling:[['plaster',65],['wood',35]]},
+ concert_full:{walls:[['wood',55],['plaster',45]],floor:[['wood',30],['audience',70]],ceiling:[['plaster',65],['wood',35]]},
+ opera_empty:{walls:[['plaster',50],['curtain',50]],floor:[['wood',65],['seats',35]],ceiling:[['plaster',70],['wood',30]]},
+ opera_full:{walls:[['plaster',50],['curtain',50]],floor:[['wood',25],['audience',75]],ceiling:[['plaster',70],['wood',30]]},
+ halfwood:{walls:[['stone',50],['wood',50]],floor:[['stone',50],['wood',50]],ceiling:[['stone',50],['wood',50]]},
+ forest:{walls:[['open',70],['foliage',30]],floor:[['earth',40],['foliage',60]],ceiling:[['open',100]]}
+};
+const MATERIAL_NAMES={stone:'Naturstein / Granit',wood:'Holz',metal:'Metall',ice:'Eis',earth:'Erde / Fels',carpet:'Teppich / Stoff',open:'Offen / kaum Reflexion',plaster:'Putz / Stuck',brick:'Ziegelstein',marble:'Marmor',concrete:'Beton',glass:'Glas / Fenster',curtain:'Schwerer Vorhang',seats:'Leere Polstersitze',audience:'Besetzte Sitzreihen',foliage:'Pflanzen / Laub',sand:'Sand / Moosboden',water:'Wasser'};
+// Aufsicht: oben ist die Bühnenrückwand (kleines z), unten liegt das Publikum.
+// Musiker stehen in Richtung des Bühnenhintergrundes VOR dem Dirigenten: Streicher haben größeres z als die Bläser.
+// Alle Koordinaten sind maßstäblich angenäherte Positionsvorlagen und pro Saal anpassbar.
+const INSTRUMENTS=[
+ ['v1','1. Violinen',.20,.43,1.1],['v2','2. Violinen',.39,.43,1.1],['va','Bratschen',.60,.43,1.1],['vc','Celli',.79,.43,1.1],['cb','Kontrabässe',.85,.32,1.1],
+ ['fl','Flöten',.37,.33,1.25],['ob','Oboen',.49,.33,1.25],['cl','Klarinetten',.59,.30,1.25],['fg','Fagotte',.72,.30,1.25],
+ ['hn','Hörner',.25,.23,1.45],['tp','Trompeten',.48,.21,1.45],['tb','Posaunen',.64,.21,1.5],['tu','Tuba',.80,.19,1.5],
+ ['ti','Pauken',.20,.12,1.5],['perc','Schlagwerk',.43,.12,1.5],['hp','Harfe',.11,.32,1.5],['pf','Klavier / Celesta',.10,.20,1.5],
+ ['pic','Piccoloflöte',.30,.32,1.25],['eh','Englischhorn',.54,.32,1.25],['bcl','Bassklarinette',.65,.29,1.25],['cfg','Kontrafagott',.77,.28,1.25],
+ ['btb','Bassposaune',.70,.19,1.5],['bd','Große Trommel',.57,.10,1.5],['gl','Glockenspiel',.67,.11,1.5],['choir','Chor',.52,.065,2.0]
+];
+const ORCHESTRA_LAYOUTS={
+ american:{label:'Modern / amerikanisch – Violinen links',description:'Vorne von links nach rechts: 1. Violinen · 2. Violinen · Bratschen · Celli. Kontrabässe hinten rechts. Holzbläser dahinter, Blech und Schlagwerk ganz hinten.',positions:{}},
+ german:{label:'Deutsch / antiphonal – Violinen gegenüber',description:'Vorne von links nach rechts: 1. Violinen · Celli · Bratschen · 2. Violinen. Die Violingruppen stehen sich gegenüber; die Kontrabässe stehen hinter der Cellogruppe.',positions:{v1:[.20,.43],vc:[.41,.43],va:[.61,.43],v2:[.80,.43],cb:[.34,.30]}},
+ vienna:{label:'Traditionell – Kontrabässe hinten',description:'Antiphonale Violinen links/rechts, Celli und Bratschen vorn in der Mitte, Kontrabässe als eigene Reihe weit hinten. Eine traditionelle Variante; Besetzungen können abweichen.',positions:{v1:[.20,.43],vc:[.41,.43],va:[.61,.43],v2:[.80,.43],cb:[.83,.12],ti:[.20,.13],perc:[.44,.12]}},
+ opera:{label:'Operngraben – kompakte Beispielaufstellung',description:'Kompakte bearbeitbare Beispielaufstellung für einen Orchestergraben. Es gibt keine einheitliche feste Opernaufstellung; Platz, Sicht und Besetzung entscheiden.',positions:{v1:[.18,.43],v2:[.37,.43],va:[.60,.43],vc:[.82,.43],cb:[.86,.30],fl:[.30,.30],ob:[.42,.30],cl:[.56,.30],fg:[.70,.30],hn:[.28,.21],tp:[.49,.21],tb:[.62,.20],tu:[.77,.18]}}
+};
+
+ORCHESTRA_LAYOUTS.berlin={label:'Deutsche Moderne – modifiziert',description:'Bühne aus Sicht des Dirigenten: 1. und 2. Violinen links, Celli und Bratschen rechts. Bässe hinter den Bratschen; Abstände und Instrumente sind editierbar.',positions:{v1:[.18,.43],v2:[.38,.43],vc:[.60,.43],va:[.81,.43],cb:[.84,.33]}};
+ORCHESTRA_LAYOUTS.chamber={label:'Kammerorchester – kompakt',description:'Kleines Orchester: Streicher vorn in engeren Gruppen, Holzbläser und Hörner dahinter. Weitere Instrumente bleiben als optionale Positionen sichtbar.',positions:{v1:[.25,.44],v2:[.43,.44],va:[.61,.44],vc:[.77,.44],cb:[.82,.32],fl:[.37,.30],ob:[.50,.30],cl:[.60,.30],fg:[.70,.30],hn:[.27,.21]}};
+ORCHESTRA_LAYOUTS.film={label:'Filmmusik – breite Streicher',description:'Breite Streicherbasis in der ersten Reihe, Holzbläser dahinter; Blech und Percussion weiter hinten. Eine frei editierbare Produktionsvorlage, keine universelle Norm.',positions:{v1:[.15,.43],v2:[.37,.43],va:[.57,.43],vc:[.79,.43],cb:[.89,.32],fl:[.38,.32],ob:[.5,.32],cl:[.62,.32],fg:[.75,.30],hn:[.24,.22],tp:[.47,.21],tb:[.66,.20],ti:[.17,.10],perc:[.46,.10]}};
+const INSTR_GROUP={v1:'strings',v2:'strings',va:'strings',vc:'strings',cb:'strings',fl:'wood',ob:'wood',cl:'wood',fg:'wood',pic:'wood',eh:'wood',bcl:'wood',cfg:'wood',hn:'brass',tp:'brass',tb:'brass',btb:'brass',tu:'brass',ti:'perc',perc:'perc',bd:'perc',gl:'perc',hp:'other',pf:'other',choir:'other'};
+const INSTR_COLORS={strings:'#edc17e',wood:'#8fc2a6',brass:'#a6b2eb',perc:'#d5a2b9',other:'#b2a8dc'};
+const MICROPHONE_PRESETS={conductor:{label:'Dirigentenplatz',p:[.50,2.0,.52],angle:0},decca:{label:'Decca-Tree-Position (Punkt)',p:[.50,3.2,.54],angle:0},ortf:{label:'ORTF-Position (Punkt)',p:[.50,2.7,.59],angle:0},front:{label:'1. Reihe Publikum',p:[.50,1.4,.65],angle:0},center:{label:'Mittleres Parkett',p:[.50,1.55,.70],angle:0},back:{label:'Hinterer Saal',p:[.50,1.65,.88],angle:0},balcony:{label:'Balkon / Empore',p:[.50,9,.82],angle:0},ceiling:{label:'Hängemikrofon oben',p:[.50,.75,.50],angle:0},near:{label:'Nahmikrofon bei Quelle',p:null,angle:0}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+state.shape='rect';state.surfaceMix=clone(MIX_PRESETS.default);state.activeInstrument='';state.orchestraLayout='american';state.orchestra={};state.customMic=[];state.customOrchestra=[];
+function buildOrchestra(layoutName=state.orchestraLayout||'american'){
+ const override=ORCHESTRA_LAYOUTS[layoutName]?.positions||{};
+ return Object.fromEntries(INSTRUMENTS.map(([id,name,x,z,y])=>{const [px,pz]=override[id]||[x,z];
+   let pt={x:state.w*px,y,z:state.l*pz};constrainPoint(pt);return [id,pt]
+ }));
+}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const Lerp=(a,b,t)=>a+(b-a)*t;
+const cssV=()=>getComputedStyle(document.documentElement);
+const help=(t,err=false)=>{$('status').textContent=t;$('status').classList.toggle('error',err)};
+const rounded=n=>Math.round(n*10)/10;
+function colorRGBA(h,alpha){if(!h)return `rgba(160,170,185,${alpha})`;let v=h.replace('#','');let n=parseInt(v,16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${alpha})`}
+function setPreset(k){const p=PRESETS[k];if(!p)return;state.preset=k;state.shape=p.shape||'rect';Object.assign(state,{w:p.w,l:p.l,h:p.h,walls:p.walls,floor:p.floor,ceiling:p.ceiling,color:p.color,source:{x:p.src[0],y:p.src[1],z:p.src[2]},mic:{x:p.mic[0],y:p.mic[1],z:p.mic[2]},damp:p.damp});constrainPoint(state.source);constrainPoint(state.mic);state.orchestraLayout=k.startsWith('opera_')?'opera':'american';state.orchestra=buildOrchestra();state.activeInstrument='';applyMixPreset(p.mixKey||(k==='cathedral'?'church':k==='castle'?'dungeon':k==='forest'?'forest':'default'),false);$('roomHeading').textContent=p.title;document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===k));syncRoomList();syncControls();refreshOrchestraUI();invalidate();} 
+function dimensionChanged(){const ow=state.w,ol=state.l;state.l=+$('length').value;state.w=+$('width').value;state.h=+$('height').value;for(let e of [state.source,state.mic,...Object.values(state.orchestra)]){e.x=clamp(e.x*state.w/ow,.25,state.w-.25);e.y=clamp(e.y,.2,state.h-.2);e.z=clamp(e.z*state.l/ol,.25,state.l-.25);constrainPoint(e)}syncControls();invalidate()}
+function invalidate(){state.ir=null;state.irMode=null;$('download').disabled=true;renderAll();help('Raum verändert – Impulsantwort bitte neu berechnen.');}
+function syncControls(){for(const [k,v] of [['length',state.l],['width',state.w],['height',state.h],['damping',state.damp],['diffusion',state.diffusion],['wet',state.wet],['duration',state.duration],['micAngle',state.micAngle]]){$(k).value=v}$('format').value=state.format;$('outLength').textContent=state.l+' m';$('outWidth').textContent=state.w+' m';$('outHeight').textContent=state.h+' m';$('outDamping').textContent=state.damp<100?'Kürzer · '+state.damp+' %':state.damp===100?'Normal':'Länger · '+state.damp+' %';$('outDiffusion').textContent=state.diffusion<35?'Klar · '+state.diffusion+' %':state.diffusion>70?'Weich · '+state.diffusion+' %':'Mittel · '+state.diffusion+' %';$('outWet').textContent=state.wet+' %';$('outDuration').textContent=state.duration+' s';$('outMicAngle').textContent=state.micAngle+'°';updateMixerUI();renderCoords();renderMicCompass()}
+function makeCoordControls(name,obj){const root=$(name+'Controls');root.innerHTML='';[['x','Links / rechts',()=>state.w],['y','Höhe',()=>state.h],['z','Vorne / hinten',()=>state.l]].forEach(([key,label,max],i)=>{const line=document.createElement('div');line.className='rowfield';line.innerHTML=`<div class="fieldtop"><label for="${name}-${key}" title="${label}">${key.toUpperCase()}</label><output id="out-${name}-${key}">–</output></div><input type="range" id="${name}-${key}" min="0.2" max="${max()}" step="0.2" value="${obj[key]}">`;root.appendChild(line);line.querySelector('input').addEventListener('input',e=>{state[name][key]=+e.target.value;constrainPoint(state[name]);if(name==='source')updateSelectedInstrument();renderCoords();invalidate()})})}
+function renderCoords(){for(const name of ['source','mic']){const root=$(name+'Controls');if(!root.children.length){makeCoordControls(name,state[name])}for(const [k,limit] of [['x',state.w],['y',state.h],['z',state.l]]){const input=$(name+'-'+k);input.max=(limit-.2).toFixed(1);input.value=state[name][k];$('out-'+name+'-'+k).textContent=rounded(state[name][k])+' m'}}}
+const rt60=()=>{const {h}=state,area=footArea(),perimeter=footPerimeter(),volume=area*h;const A=perimeter*h*surfaceA('walls')+area*(surfaceA('floor')+surfaceA('ceiling'));return clamp(.161*volume/Math.max(1,A)*state.damp/100,.12,15)};
+function renderStats(){let dx=state.source.x-state.mic.x,dy=state.source.y-state.mic.y,dz=state.source.z-state.mic.z,d=Math.hypot(dx,dy,dz);$('rt60').textContent=rt60().toFixed(2)+' s';$('distance').textContent=d.toFixed(1)+' m';$('arrival').textContent=(d/343*1000).toFixed(0)+' ms';$('volume').textContent=Math.round(footArea()*state.h).toLocaleString('de-DE')+' m³';}
+function fitCanvas(canvas){let rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(rect.width*dpr)),h=Math.max(1,Math.round(rect.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}return {c:canvas.getContext('2d'),w,h,dpr};}
+function projectSetup(w,h){const maxDim=Math.max(state.w,state.l,state.h),scale=Math.min(w/(state.w+state.l*.7+state.h*.65),h/(state.h+state.l*.62+state.w*.42))*1.36*state.zoom;let cy=Math.cos(state.yaw),sy=Math.sin(state.yaw),cp=Math.cos(state.pitch),sp=Math.sin(state.pitch);return (x,y,z)=>{let dx=x-state.w/2,dy=y-state.h*.38,dz=z-state.l/2;let xx=dx*cy-dz*sy,zz=dx*sy+dz*cy;let yy=dy*cp-zz*sp,depth=dy*sp+zz*cp;let per=1/(1+depth/(maxDim*2.7));return {x:w/2+xx*scale*per,y:h*.54-yy*scale*per,d:depth}}}
+function line(c,a,b,col='#5b7194',lw=1,dash=[]){c.beginPath();c.setLineDash(dash);c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.strokeStyle=col;c.lineWidth=lw;c.stroke();c.setLineDash([])}
+function face(c,pts,fill,stroke){c.beginPath();c.moveTo(pts[0].x,pts[0].y);pts.slice(1).forEach(q=>c.lineTo(q.x,q.y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke()}}
+function sphere(c,p,col,r,label){c.save();c.shadowColor=col;c.shadowBlur=18;let g=c.createRadialGradient(p.x-3,p.y-3,1,p.x,p.y,r*2);g.addColorStop(0,'#fff');g.addColorStop(.4,col);g.addColorStop(1,col+'00');c.beginPath();c.arc(p.x,p.y,r*2,0,Math.PI*2);c.fillStyle=g;c.fill();c.shadowBlur=0;c.beginPath();c.arc(p.x,p.y,r*.8,0,Math.PI*2);c.strokeStyle='#ffffff';c.lineWidth=2;c.stroke();c.font='bold 12px Segoe UI';c.textAlign='left';c.fillStyle=col;c.fillText(label,p.x+13,p.y-9);c.restore()}
+function render3D(){const {c,w,h}=fitCanvas($('view3d'));c.clearRect(0,0,w,h);const bg=c.createRadialGradient(w*.53,h*.43,10,w*.5,h*.45,Math.max(w,h)*.67);bg.addColorStop(0,isPerformance()?'#34302b':'#252c40');bg.addColorStop(.6,isPerformance()?'#211d1c':'#151b2b');bg.addColorStop(1,'#0b111a');c.fillStyle=bg;c.fillRect(0,0,w,h);const P=projectSetup(w,h);const footprint=getFootprint(),verts=footprint.map(([x,z])=>P(x,0,z)),tops=footprint.map(([x,z])=>P(x,state.h,z));face(c,verts,colorRGBA(state.color,.23),'#65809b45');const faces=footprint.map((p,i)=>{let j=(i+1)%footprint.length;return {v:[verts[i],verts[j],tops[j],tops[i]],d:(verts[i].d+verts[j].d+tops[j].d+tops[i].d)/4}}).sort((a,b)=>a.d-b.d);for(const f of faces)face(c,f.v,colorRGBA(state.color,.13));
+// Bodenraster
+for(let ix=0;ix<=10;ix++){let x=state.w*ix/10,points=[];for(let iz=0;iz<=48;iz++){let z=state.l*iz/48;if(pointInFootprint(x,z)){points.push(P(x,0,z))}else if(points.length){for(let i=1;i<points.length;i++)line(c,points[i-1],points[i],'rgba(142,169,193,.16)',.7);points=[]}}for(let i=1;i<points.length;i++)line(c,points[i-1],points[i],'rgba(142,169,193,.16)',.7)}if(isPerformance()){for(let i=0;i<INSTRUMENTS.length;i++){const [id]=INSTRUMENTS[i],pt=state.orchestra[id];if(!pt)continue;let p=P(pt.x,pt.y,pt.z);c.beginPath();c.arc(p.x,p.y,id===state.activeInstrument?4:2.5,0,Math.PI*2);c.fillStyle=id===state.activeInstrument?'#ffe1a3':'#a5c9c7';c.fill()}}
+if(state.preset==='cathedral'||state.preset==='dwarf'||state.preset==='castle'){
+let n=state.preset==='castle'?4:7;for(let i=1;i<=n;i++){let z=i*state.l/(n+1);for(let x of [state.w*.13,state.w*.87]){let bot=P(x,0,z),top=P(x,state.h*.87,z);line(c,bot,top,colorRGBA(state.color,.78),state.preset==='dwarf'?8:5);let cap=P(x,state.h*.88,z);c.beginPath();c.ellipse(cap.x,cap.y,8,3,0,0,Math.PI*2);c.fillStyle='#c8b28d';c.fill();if(state.preset==='cathedral'){line(c,top,P(state.w/2,state.h*.98,z),colorRGBA(state.color,.48),2)}}}}
+else if(state.preset==='cave'||state.preset==='ice'){for(let i=1;i<18;i++){let x=((i*13)%17+1)/19*state.w,z=((i*7)%23+1)/25*state.l,top=P(x,state.h,z),bottom=P(x,state.h*(.57+(i%4)*.09),z),base=P(x,0,z);line(c,top,bottom,colorRGBA(state.color,.5),4+(i%4));if(i%3===0)line(c,base,P(x,Math.min(state.h*.2,4+i%4*2),z),colorRGBA(state.color,.58),3)}}
+else if(state.preset==='forest'){for(let i=0;i<26;i++){let x=((i*13)%31+.5)/32*state.w,z=((i*17)%37+.5)/38*state.l;let top=P(x,Math.min(state.h*.65,8+i%6*2),z),foot=P(x,0,z);line(c,top,foot,'#625944',2.6);c.beginPath();c.arc(top.x,top.y,6+i%4,0,Math.PI*2);c.fillStyle='#56857486';c.fill()}}
+// Modell-Skizze der möglichen Schallwege
+const S=P(state.source.x,state.source.y,state.source.z),M=P(state.mic.x,state.mic.y,state.mic.z);line(c,S,M,'rgba(255,215,156,.63)',2,[5,5]);for(let i=0;i<verts.length;i++){let j=(i+1)%verts.length;line(c,verts[i],verts[j],'rgba(171,191,215,.52)',1.4);line(c,tops[i],tops[j],'rgba(171,191,215,.38)',1);line(c,verts[i],tops[i],'rgba(171,191,215,.29)',.9)}
+sphere(c,S,'#ff867d',6,'Quelle');
+// Visuelle Schallrichtung des Mikrofons in der 3D-Szene (0 Grad = Bühne / negative Z-Achse).
+const ang=micAngleRad(),fwd3d=Math.max(2,Math.min(state.w,state.l)*.23);
+const arrow3d=P(state.mic.x+Math.sin(ang)*fwd3d,state.mic.y,state.mic.z-Math.cos(ang)*fwd3d);
+function projectArrow3D(from,to){const vx=to.x-from.x,vy=to.y-from.y,len=Math.hypot(vx,vy);if(len<1)return;const ux=vx/len,uy=vy/len;
+ c.save();c.shadowBlur=11;c.shadowColor='#51d8ff';line(c,from,to,'#b9f0ff',3);c.beginPath();c.moveTo(to.x,to.y);c.lineTo(to.x-ux*14-uy*6,to.y-uy*14+ux*6);c.lineTo(to.x-ux*14+uy*6,to.y-uy*14-ux*6);c.closePath();c.fillStyle='#76d9ff';c.fill();c.restore()}
+projectArrow3D(M,arrow3d);
+sphere(c,M,'#86d4e4',6,'Mikrofon');c.fillStyle='#bbc5d3';c.font='11px Segoe UI';c.fillText(`${state.w} × ${state.l} × ${state.h} m`,18,h-19)}
+function planRect(w,h){let pad=Math.max(16,Math.min(w,h)*.045),ratio=state.l/state.w;let rw=Math.min(w-2*pad,(h-2*pad)*ratio),rh=rw/ratio;if(rh>h-2*pad){rh=h-2*pad;rw=rh*ratio}return {x:(w-rw)/2,y:(h-rh)/2,w:rw,h:rh}}
+function worldToPlan(x,z,r){return {x:r.x+(1-z/state.l)*r.w,y:r.y+(x/state.w)*r.h}}
+function planToWorld(x,y,r){return {x:clamp((y-r.y)/r.h*state.w,.2,state.w-.2),z:clamp((1-(x-r.x)/r.w)*state.l,.2,state.l-.2)}}
+// Konsistente Konvention: 0° = Bildschirm rechts (Bühne, -Z); +90° = unten (+X); -90° = oben (-X).
+function micAngleRad(){return (Number(state.micAngle)||0)*Math.PI/180}
+function compassDirection(){const a=((Number(state.micAngle)||0)+360)%360;if(a<22.5||a>=337.5)return 'Zur Bühne →';if(a<67.5)return 'Schräg rechts unten ↘';if(a<112.5)return 'Nach unten ↓';if(a<157.5)return 'Schräg links unten ↙';if(a<202.5)return 'Zum Publikum ←';if(a<247.5)return 'Schräg links oben ↖';if(a<292.5)return 'Nach oben ↑';return 'Schräg rechts oben ↗'}
+function renderMicCompass(){const canvas=$('micCompass');if(!canvas)return;const {c,w,h}=fitCanvas(canvas),cx=w/2,cy=h/2,R=Math.min(w,h)*.37;
+ c.clearRect(0,0,w,h);c.fillStyle='#0d1722';c.beginPath();c.arc(cx,cy,R+11,0,Math.PI*2);c.fill();c.strokeStyle='#455d71';c.lineWidth=1.6;c.stroke();
+ c.strokeStyle='#344c62';c.lineWidth=1;for(let a=0;a<360;a+=30){let t=a*Math.PI/180;c.beginPath();c.moveTo(cx+Math.cos(t)*(R-4),cy+Math.sin(t)*(R-4));c.lineTo(cx+Math.cos(t)*(R+4),cy+Math.sin(t)*(R+4));c.stroke()}
+ c.font=`bold ${Math.round(w*.11)}px Segoe UI`;c.textAlign='center';c.textBaseline='middle';c.fillStyle='#e3c58d';c.fillText('Bühne',cx+R*.65,cy-R*.37);
+ const a=micAngleRad(),ux=Math.cos(a),uy=Math.sin(a),tip={x:cx+ux*(R-1),y:cy+uy*(R-1)};
+ c.save();c.strokeStyle='#8de1ff';c.shadowColor='#46c7f4';c.shadowBlur=12;c.lineWidth=Math.max(3,w*.045);c.lineCap='round';c.beginPath();c.moveTo(cx,cy);c.lineTo(tip.x,tip.y);c.stroke();c.shadowBlur=0;c.beginPath();c.moveTo(tip.x,tip.y);c.lineTo(tip.x-ux*12-uy*7,tip.y-uy*12+ux*7);c.lineTo(tip.x-ux*12+uy*7,tip.y-uy*12-ux*7);c.closePath();c.fillStyle='#a3ecff';c.fill();c.restore();
+ c.beginPath();c.arc(cx,cy,7,0,Math.PI*2);c.fillStyle='#2477ce';c.fill();c.strokeStyle='#d8f5ff';c.lineWidth=1.6;c.stroke();
+ const hint=$('micDirectionHint');if(hint)hint.textContent=compassDirection()+' · Spitze im Grundriss mit der Maus drehen';
+}
+function micArrowPoints(r){const at=worldToPlan(state.mic.x,state.mic.z,r),theta=micAngleRad();const L=Math.max(26,Math.min(r.w,r.h)*.24),ux=Math.cos(theta),uy=Math.sin(theta);return {at,tip:{x:at.x+ux*L,y:at.y+uy*L},ux,uy,length:L}}
+function setMicDirectionFromPlan(x,y,r){const at=worldToPlan(state.mic.x,state.mic.z,r),dx=x-at.x,dy=y-at.y;if(Math.hypot(dx,dy)<3)return;
+ let deg=Math.atan2(dy,dx)*180/Math.PI;state.micAngle=Math.round(deg);syncControls();invalidate();}
+function renderPlan(){
+  const {c,w,h}=fitCanvas($('plan')),r=planRect(w,h);
+  c.clearRect(0,0,w,h);c.fillStyle='#0c1521';c.fillRect(0,0,w,h);
+  c.save();for(let x=0;x<w;x+=26){line(c,{x,y:0},{x,y:h},'#233244',.6)}for(let y=0;y<h;y+=26){line(c,{x:0,y},{x:w,y},'#233244',.6)}c.restore();
+  const pts=getFootprint().map(([x,z])=>worldToPlan(x,z,r));
+  c.beginPath();pts.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();
+  const gx=c.createLinearGradient(r.x,r.y,r.x+r.w,r.y);gx.addColorStop(0,'rgba(45,65,84,.37)');gx.addColorStop(.65,colorRGBA(state.color,.25));gx.addColorStop(1,'rgba(121,79,40,.38)');
+  c.fillStyle=gx;c.fill();c.strokeStyle='#a9b8c9';c.lineWidth=2;c.stroke();
+  c.save();c.clip();
+  if(isPerformance()){
+    // Stage and orchestra at right (low z), audience at left (high z).
+    const stage0=worldToPlan(0,state.l*.24,r),stage1=worldToPlan(state.w,state.l*.08,r);
+    let stage=c.createLinearGradient(stage0.x,0,stage1.x,0);stage.addColorStop(0,'rgba(168,104,47,.08)');stage.addColorStop(1,'rgba(229,151,62,.3)');
+    c.fillStyle=stage;c.fillRect(stage0.x,r.y,Math.abs(stage1.x-stage0.x),r.h);
+    for(let row=0;row<11;row++){
+      const z=state.l*(.52+row*.039);let last=null;
+      for(let j=0;j<=42;j++){
+        const nx=.08+j/42*.84,xx=nx*state.w;
+        if(!pointInFootprint(xx,z))continue;
+        const pt=worldToPlan(xx,z,r);
+        if(last)line(c,last,pt,row%2?'#ac875d66':'#bc9d7466',1);
+        last=pt;
+        if(j%2===0){c.beginPath();c.arc(pt.x,pt.y,1.3,0,Math.PI*2);c.fillStyle=row%3?'#9c764d':'#c29a67';c.fill()}
+      }
+    }
+    // Subtle wall boxes, visually suggest tiers/balconies around auditorium.
+    for(let z=.47;z<.91;z+=.085){for(let x of [.08,.92]){const a=worldToPlan(x*state.w,z*state.l,r);c.strokeStyle='#deb27a44';c.strokeRect(a.x-5,a.y-5,10,10)}}
+    const groups=[['Schlagwerk','#d5a2b9',.11],['Blech','#a6b2eb',.24],['Holz','#8fc2a6',.33],['Streicher','#edc17e',.43]];
+    for(const [label,color,z] of groups){const pos=worldToPlan(state.w*.06,state.l*z,r);c.font='bold 8px Segoe UI';c.fillStyle=color;c.textAlign='left';c.fillText(label,pos.x-18,pos.y+3)}
+    for(const [id,name] of INSTRUMENTS){const pt=state.orchestra[id];if(!pt)continue;const pos=worldToPlan(pt.x,pt.z,r),col=INSTR_COLORS[INSTR_GROUP[id]]||'#acc6cf';c.beginPath();c.arc(pos.x,pos.y,id===state.activeInstrument?6:3.6,0,Math.PI*2);c.fillStyle=id===state.activeInstrument?'#ffefc7':col;c.fill();if(id===state.activeInstrument){c.strokeStyle='#fff5d9';c.lineWidth=1.4;c.stroke()}}
+    const conductor=worldToPlan(state.w*.5,state.l*.50,r);c.beginPath();c.arc(conductor.x,conductor.y,4,0,Math.PI*2);c.fillStyle='#f2d29b';c.fill();c.fillStyle='#f4d9b4';c.font='bold 9px Segoe UI';c.textAlign='center';c.fillText('DIRIGENT',conductor.x,conductor.y+18);
+  }else{
+    for(let z=0;z<=state.l;z+=state.l/11){const a=worldToPlan(0,z,r),b=worldToPlan(state.w,z,r);line(c,a,b,'#7d93a232',.8)}
+    for(let x=0;x<=state.w;x+=state.w/11){const a=worldToPlan(x,0,r),b=worldToPlan(x,state.l,r);line(c,a,b,'#7d93a232',.8)}
+  }
+  c.restore();
+  const marker=(pos,color,letter)=>{let pt=worldToPlan(pos.x,pos.z,r);c.beginPath();c.arc(pt.x,pt.y,10,0,2*Math.PI);c.fillStyle=color;c.fill();c.lineWidth=2;c.strokeStyle='#0e1420';c.stroke();c.font='bold 10px Segoe UI';c.textAlign='center';c.fillStyle='#fff';c.fillText(letter,pt.x,pt.y+3);return pt};
+  const src=marker(state.source,'#db4b54','S'),mic=marker(state.mic,'#2387df','M');line(c,src,mic,'#f5e2bf88',1.2,[3,4]);
+  // Sichtbarer Blickrichtungspfeil und drehbarer, orangefarbener Griff am blauen Mikrofon.
+  const aim=micArrowPoints(r);c.save();c.shadowBlur=13;c.shadowColor='#3bc9ff';line(c,aim.at,aim.tip,'#a6eaff',4);c.shadowBlur=0;
+  c.beginPath();c.moveTo(aim.tip.x+aim.ux*7,aim.tip.y+aim.uy*7);c.lineTo(aim.tip.x-aim.ux*10-aim.uy*8,aim.tip.y-aim.uy*10+aim.ux*8);c.lineTo(aim.tip.x-aim.ux*10+aim.uy*8,aim.tip.y-aim.uy*10-aim.ux*8);c.closePath();c.fillStyle='#8cdeff';c.fill();
+  c.beginPath();c.arc(aim.tip.x,aim.tip.y,7.5,0,Math.PI*2);c.strokeStyle='#ffd694';c.lineWidth=2;c.stroke();
+  c.font='bold 10px Segoe UI';c.textAlign='left';c.fillStyle='#dbf4ff';c.fillText(Math.round(state.micAngle)+'°',aim.tip.x+12,aim.tip.y-9);c.restore();
+  c.textAlign='right';c.font='bold 9px Segoe UI';c.fillStyle='#b4becc';c.fillText('BÜHNE',w-9,12);
+  c.textAlign='left';c.fillText('ZUSCHAUER',8,h-9);
+}
+function renderAll(){render3D();renderPlan();renderStats();drawOrchestraMini();renderMicCompass();syncQuickInstruments()}
+function reflectEvents(mode,rate){const count=mode==='foa'?4:2,events=[],s=state.source,m=state.mic,cs=343;const R=(surface)=>Math.sqrt(Math.max(.005,1-surfaceA(surface)));const reflections=[R('walls'),R('ceiling'),R('walls')];const lengths=[state.w,state.h,state.l];if(state.shape!=='rect'){
+const push=(px,py,pz,hits,reflect=1)=>{let dx=px-m.x,dy=py-m.y,dz=pz-m.z,dist=Math.max(.2,Math.hypot(dx,dy,dz)),t=dist/cs;if(t>state.duration)return;const direction={x:dx/dist,y:dy/dist,z:dz/dist};let amp=reflect*(2.1/(1+dist))*(hits?.88:1);const theta=state.micAngle*Math.PI/180,side=direction.x*Math.cos(theta)+direction.z*Math.sin(theta);const gains=mode==='foa'?[1,direction.x,direction.y,-direction.z]:[Math.sqrt((1-side*.72)/2),Math.sqrt((1+side*.72)/2)];events.push({index:t*rate,amp,weight:hits?.85:1,gains})};
+push(s.x,s.y,s.z,0);push(s.x,-s.y,s.z,1,R('floor'));push(s.x,2*state.h-s.y,s.z,1,R('ceiling'));
+const polygon=getFootprint();const cross=(a,b)=>a.x*b.z-a.z*b.x;for(let i=0;i<polygon.length;i++){let [ax,az]=polygon[i],[bx,bz]=polygon[(i+1)%polygon.length],vx=bx-ax,vz=bz-az,len2=vx*vx+vz*vz;if(len2<1e-9)continue;let q=((s.x-ax)*vx+(s.z-az)*vz)/len2,fx=ax+q*vx,fz=az+q*vz,rx=2*fx-s.x,rz=2*fz-s.z;let a={x:rx,z:rz},b={x:m.x-rx,z:m.z-rz},c={x:ax,z:az},d={x:vx,z:vz},den=cross(b,d);if(Math.abs(den)<1e-6)continue;let t=cross({x:c.x-a.x,z:c.z-a.z},d)/den,u=cross({x:c.x-a.x,z:c.z-a.z},b)/den;if(t<=.001||t>=.999||u<0||u>1)continue;push(rx,s.y,rz,1,R('walls'));}return {events,count};}
+
+// Image-source method: mirrors along the three coordinate axes; enumerate up to fourth-order reflection patterns.
+const axisImages=(coord,L,r)=>{let arr=[];for(let n=-2;n<=2;n++){for(let sign of [1,-1]){let hits=Math.abs(sign===1?2*n:2*n-1);if(hits<=4)arr.push({coord:2*n*L+sign*coord,hits,weight:Math.pow(r,hits)})}}return arr};
+const ax=axisImages(s.x,state.w,reflections[0]),ay=axisImages(s.y,state.h,Math.sqrt(R('floor')*R('ceiling'))),az=axisImages(s.z,state.l,reflections[2]);for(const x of ax)for(const y of ay)for(const z of az){const hits=x.hits+y.hits+z.hits;if(hits>4)continue;let dx=x.coord-m.x,dy=y.coord-m.y,dz=z.coord-m.z,dist=Math.hypot(dx,dy,dz);if(dist<.2)dist=.2;let t=dist/cs;if(t>state.duration)continue;const direction={x:dx/dist,y:dy/dist,z:dz/dist};let amp=(x.weight*y.weight*z.weight)*(2.1/(1+dist))*(hits?Math.pow(.88,hits):1);
+// room energy / distance; zero-order direct preserved. Listener faces towards negative-z by default.
+const theta=state.micAngle*Math.PI/180,side=(direction.x*Math.cos(theta)+direction.z*Math.sin(theta));
+let gains=mode==='foa'?[1, direction.x, direction.y, -direction.z]:[Math.sqrt((1-side*.72)/2),Math.sqrt((1+side*.72)/2)];
+events.push({index:t*rate,amp,weight:hits===0?1:.85,gains})}
+return {events,count}}
+function generateIR(mode='stereo',rateOverride=null){const rate=rateOverride||state.sampleRate,seconds=Math.min(state.duration,Math.max(1.0,rt60()*1.35));let N=Math.ceil(seconds*rate),out=Array.from({length:mode==='foa'?4:2},()=>new Float32Array(N));const {events}=reflectEvents(mode,rate);for(const ev of events){let t=ev.index,i=Math.floor(t),frac=t-i;if(i>=N-1)continue;for(let c=0;c<out.length;c++){const value=ev.amp*ev.gains[c]*ev.weight;out[c][i]+=value*(1-frac);out[c][i+1]+=value*frac}}
+// Late diffuse field: seeded deterministic stochastic taps, exponential energy decay (not measured FDN/ray tracing).
+const decay=rt60(),density=state.diffusion/100,begin=Math.min(N-1,Math.round(Math.min(.07,Math.max(.015,footArea()*state.h/300000))*rate));let seed=39817+Math.round(state.w*17+state.l*53+state.h*97+state.source.x*79+state.mic.z*43);function rand(){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)/4294967296}
+if(density>0){let value=Array(out.length).fill(0),LP=Array(out.length).fill(0),gain=.022*density*Math.sqrt(75/Math.max(15,footArea()*state.h/1000));let step=2;for(let i=begin;i<N;i+=step){let t=i/rate,env=Math.pow(10,-3*t/Math.max(.12,decay));const ramp=clamp((i-begin)/(rate*.07),0,1);for(let c=0;c<out.length;c++){let white=rand()*2-1;LP[c]=LP[c]*.61+white*.39;let sample=(white*.42+LP[c]*.58)*env*ramp*gain;if(mode==='foa'){if(c===0)sample*=.7;else sample*=.55;}out[c][i]+=sample;if(i+1<N)out[c][i+1]+=sample*.56}}}
+let peak=0;for(let ch of out)for(let i=0;i<ch.length;i++)peak=Math.max(peak,Math.abs(ch[i]));let g=peak?Math.min(1.0,.88/peak):1;for(const ch of out){for(let i=0;i<ch.length;i++)ch[i]*=g;let fade=Math.min(Math.floor(rate*.12),N);for(let i=0;i<fade;i++)ch[N-i-1]*=i/fade}
+return {channels:out,sampleRate:rate,seconds:N/rate,mode,events:events.length,rt60:decay}}
+function wav24(ir){const {channels,sampleRate}=ir,C=channels.length,N=channels[0].length,bits=24,bytes=3,header=44,buffer=new ArrayBuffer(header+N*C*bytes),v=new DataView(buffer),u=new Uint8Array(buffer);function str(p,s){for(let i=0;i<s.length;i++)v.setUint8(p+i,s.charCodeAt(i))}str(0,'RIFF');v.setUint32(4,buffer.byteLength-8,true);str(8,'WAVE');str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,C,true);v.setUint32(24,sampleRate,true);v.setUint32(28,sampleRate*C*bytes,true);v.setUint16(32,C*bytes,true);v.setUint16(34,bits,true);str(36,'data');v.setUint32(40,N*C*bytes,true);let at=header;for(let i=0;i<N;i++)for(let c=0;c<C;c++){let value=clamp(channels[c][i],-1,1-1/8388608);let z=Math.round(value*8388607);u[at++]=z&255;u[at++]=(z>>8)&255;u[at++]=(z>>16)&255}return new Blob([buffer],{type:'audio/wav'})}
+function downloadBlob(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+function renderWave(){let {c,w,h}=fitCanvas($('wave'));c.clearRect(0,0,w,h);c.fillStyle='#0c1422';c.fillRect(0,0,w,h);for(let j=1;j<=3;j++){line(c,{x:0,y:h*j/4},{x:w,y:h*j/4},'#334357',1)}let ir=state.ir;if(!ir){c.font='12px Segoe UI';c.fillStyle='#7586a1';c.textAlign='center';c.fillText('Noch keine Impulsantwort berechnet',w/2,h/2);return}const ch=ir.channels[0],step=Math.max(1,Math.floor(ch.length/w));c.beginPath();for(let x=0;x<w;x++){let a=x*step,b=Math.min(ch.length,a+step),peak=0;for(let i=a;i<b;i++)peak=Math.max(peak,Math.abs(ch[i]));c.moveTo(x,h/2-peak*h*.43);c.lineTo(x,h/2+peak*h*.43)}c.strokeStyle='#d9b87b';c.lineWidth=1;c.stroke();c.fillStyle='#a9b9c9';c.font='10px Segoe UI';c.textAlign='right';c.fillText(ir.seconds.toFixed(1)+' s',w-8,h-10)}
+function choralSample(rate){const type=$('testSound').value,dur=type==='click'?.15:type==='percussion'?1.3:type==='bell'?2.2:3.1,N=Math.floor(dur*rate),buf=new Float32Array(N),notes=type==='choir'?[196,246.94,293.66,392]:type==='bell'?[440,880,1325,1750]:type==='percussion'?[80,121]:[0];let seed=22719;const noise=()=>{seed=(seed*1664525+1013904223)>>>0;return (seed/2147483648)-1};for(let i=0;i<N;i++){let t=i/rate,val=0;if(type==='choir'){let env=Math.min(1,t/.18)*Math.min(1,(dur-t)/.7);for(let k=0;k<notes.length;k++){let f=notes[k];let vibrato=1+.0035*Math.sin(2*Math.PI*(4.5+k*.1)*t);for(let q=1;q<=6;q++)val+=Math.sin(2*Math.PI*f*q*t*vibrato+k*.19)/(q*1.4)*(.25+Math.exp(-((q-3)**2)/2)*.16)}val*=env*.08}
+else if(type==='bell'){for(let k=0;k<notes.length;k++)val+=Math.sin(2*Math.PI*notes[k]*t)*(Math.exp(-t*(1.0+k*.35)))*.15}
+else if(type==='percussion'){let env=Math.exp(-t*9);val=Math.sin(2*Math.PI*(50+40*Math.exp(-t*22))*t)*env*.66+noise()*Math.exp(-t*24)*.12}
+else val=noise()*Math.exp(-t*90)*.8;buf[i]=clamp(val,-1,1)}return buf}
+async function preview(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error('Dieser Browser unterstützt kein Web Audio.');if(!state.ir||state.irMode!=='stereo'){state.ir=generateIR('stereo');state.irMode='stereo';renderWave();$('download').disabled=(state.format!=='stereo')};if(!state.audioCtx)state.audioCtx=new AC();const ac=state.audioCtx;await ac.resume();stopSound();let src=ac.createBufferSource();if(state.audioData){src.buffer=state.audioData}else{let data=choralSample(ac.sampleRate),b=ac.createBuffer(1,data.length,ac.sampleRate);b.copyToChannel(data,0);src.buffer=b}const stereo=state.ir.sampleRate===ac.sampleRate?state.ir:generateIR('stereo',ac.sampleRate),ib=ac.createBuffer(2,stereo.channels[0].length,stereo.sampleRate);ib.copyToChannel(stereo.channels[0],0);ib.copyToChannel(stereo.channels[1],1);const rev=ac.createConvolver();rev.normalize=false;rev.buffer=ib;let dry=ac.createGain(),wet=ac.createGain();dry.gain.value=(100-state.wet)/100*.7;wet.gain.value=(state.wet/100)*.85;src.connect(dry).connect(ac.destination);src.connect(rev).connect(wet).connect(ac.destination);src.start();state.playNodes=[src,dry,wet,rev];src.onended=()=>{if(state.playNodes[0]===src)state.playNodes=[]};help('Wiedergabe läuft. Die Vorschau nutzt Stereo-Faltungshall im Browser.')}catch(e){help('Vorschau fehlgeschlagen: '+e.message,true)}}
+function stopSound(){for(const node of state.playNodes){try{if(node.stop)node.stop();node.disconnect()}catch(e){}}state.playNodes=[]}
+
+// Materials: weighted surface absorption; two editable materials per face.
+function surfaceA(surface){let mix=state.surfaceMix?.[surface];if(!Array.isArray(mix)||!mix.length)return MATERIALS[state[surface]]?.a||.1;return clamp(mix.reduce((sum,[key,pct])=>sum+(MATERIALS[key]?.a??.1)*pct/100,0),.01,.99)}
+function applyMixPreset(key,redraw=true){let mix=MIX_PRESETS[key];if(!mix)return;state.surfaceMix=clone(mix);for(const key2 of ['walls','floor','ceiling']){if(state.surfaceMix[key2].length===1)state.surfaceMix[key2].push(['stone',0]);state[key2]=state.surfaceMix[key2][0][0]}if($('materialProfile'))$('materialProfile').value=key;updateMixerUI();if(redraw)invalidate()}
+function initMixer(){const root=$('materialMixer');root.innerHTML='';for(const [area,label] of [['walls','Wände'],['floor','Boden'],['ceiling','Decke']]){let section=document.createElement('div');section.className='materialRow';section.innerHTML=`<strong>${label}</strong><div class="materialCols"><select class="choose" id="${area}A" aria-label="${label} Material 1"></select><select class="choose" id="${area}B" aria-label="${label} Material 2"></select></div><div class="mixHead"><span>Anteil Material 1 / Material 2</span><output id="${area}Pct">100 % / 0 %</output></div><input aria-label="Anteil ${label}" id="${area}Mix" type="range" min="0" max="100" step="5" value="100">`;root.appendChild(section);for(const ending of ['A','B']){let select=$(area+ending);for(const [key,name] of Object.entries(MATERIAL_NAMES)){const o=document.createElement('option');o.value=key;o.textContent=name;select.append(o)}select.addEventListener('change',()=>commitMix(area))}$(area+'Mix').addEventListener('input',()=>commitMix(area))}updateMixerUI()}
+function commitMix(area){const pct=+$(area+'Mix').value;state.surfaceMix[area]=[[$(area+'A').value,pct],[$(area+'B').value,100-pct]];state[area]=$(area+'A').value;$('materialProfile').value='custom';updateMixerUI();invalidate()}
+function updateMixerUI(){if(!$('materialMixer').children.length)return;for(const a of ['walls','floor','ceiling']){let v=state.surfaceMix?.[a]||[[state[a],100],['stone',0]];$(a+'A').value=v[0][0];$(a+'B').value=v[1]?.[0]||'stone';$(a+'Mix').value=v[0][1];$(a+'Pct').textContent=`${v[0][1]} % / ${100-v[0][1]} %`}}
+function isPerformance(){return state.preset.startsWith('concert_')||state.preset.startsWith('opera_')}
+// Normalized footprints: rectangle, terrace hall, expanding fan, circular, oval and horseshoe-like rooms.
+function getFootprint(){
+ const t=state.shape||'rect'; let p;
+ const ellipse=(n,rx=.47,rz=.47,cx=.5,cz=.5)=>Array.from({length:n},(_,i)=>{const a=2*Math.PI*i/n;return [cx+rx*Math.cos(a),cz+rz*Math.sin(a)]});
+ if(t==='hexagon'||t==='octagon'||t==='pentagon'||t==='triangle'){
+   const n=({hexagon:6,octagon:8,pentagon:5,triangle:3})[t];
+   // Exakt n Ecken und n Wandsegmente; nicht als Rechteck simuliert.
+   const phase=n%2===0 ? Math.PI/n : -Math.PI/2;
+   p=Array.from({length:n},(_,i)=>{const a=phase+2*Math.PI*i/n;return [.5+.475*Math.cos(a),.5+.475*Math.sin(a)]});
+ }
+ else if(t==='round'||t==='oval')p=ellipse(48);
+ else if(t==='octagon')p=ellipse(8,.475,.475);
+ else if(t==='organic'){p=Array.from({length:48},(_,i)=>{const a=2*Math.PI*i/48,r=.84+.065*Math.sin(5*a+.6)+.065*Math.sin(9*a-.5)+.025*Math.sin(13*a+1.5);return [.5+.48*r*Math.cos(a),.5+.48*r*Math.sin(a)]})}
+ else if(t==='star'){p=Array.from({length:24},(_,i)=>{const a=2*Math.PI*i/24,r=i%2===0?.47:.375;return [.5+r*Math.cos(a),.5+r*Math.sin(a)]})}
+ else if(t==='cross')p=[[.34,.02],[.66,.02],[.66,.30],[.97,.30],[.97,.62],[.66,.62],[.66,.98],[.34,.98],[.34,.62],[.03,.62],[.03,.30],[.34,.30]];
+ else if(t==='tbranch')p=[[.30,.02],[.70,.02],[.70,.47],[.97,.47],[.97,.80],[.03,.80],[.03,.47],[.30,.47]];
+ else if(t==='lwing')p=[[.04,.04],[.48,.04],[.48,.52],[.97,.52],[.97,.97],[.04,.97]];
+ else if(t==='corridor')p=[[.32,.025],[.68,.025],[.68,.36],[.75,.44],[.75,.76],[.66,.97],[.31,.97],[.25,.76],[.25,.44],[.32,.36]];
+ else if(t==='apse'){p=[[.06,.20],[.20,.07],[.80,.07],[.94,.20],[.94,.88]];for(let i=0;i<=24;i++){const a=Math.PI*i/24;p.push([.5+.44*Math.cos(a),.86+.105*Math.sin(a)])}p.push([.06,.88])}
+ else if(t==='courtyard')p=[[.04,.04],[.96,.04],[.96,.96],[.04,.96]]; // offener Burghof: freier Himmel über Innenfläche
+ else if(t==='fan')p=[[.36,.04],[.64,.04],[.81,.31],[.95,.61],[.995,.97],[.005,.97],[.05,.61],[.19,.31]];
+ else if(t==='vineyard')p=[[.28,.04],[.72,.04],[.84,.21],[.91,.4],[.98,.59],[.9,.79],[.77,.93],[.63,.98],[.37,.98],[.23,.93],[.1,.79],[.02,.59],[.09,.40],[.16,.21]];
+ else if(t==='horseshoe'){p=[[.25,.06],[.75,.06],[.86,.22],[.96,.47]];for(let i=0;i<=28;i++){let a=Math.PI*i/28;p.push([.5+.46*Math.cos(a),.52+.44*Math.sin(a)])}p.push([.04,.47],[.14,.22])}
+ else if(t==='italian'){p=[[.23,.04],[.77,.04],[.84,.18],[.94,.4]];for(let i=0;i<=28;i++){let a=Math.PI*i/28;p.push([.5+.44*Math.cos(a),.53+.42*Math.sin(a)])}p.push([.06,.4],[.16,.18])}
+ else p=[[.015,.015],[.985,.015],[.985,.985],[.015,.985]];
+ return p.map(([x,z])=>[x*state.w,z*state.l]);
+}
+function pointInFootprint(x,z){const p=getFootprint();let inside=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const [ax,az]=p[i],[bx,bz]=p[j];if(((az>z)!==(bz>z))&&(x<(bx-ax)*(z-az)/(bz-az)+ax))inside=!inside}return inside}
+function constrainPoint(p){
+ p.x=clamp(p.x,.1,state.w-.1);p.z=clamp(p.z,.1,state.l-.1);p.y=clamp(p.y,.15,state.h-.15);
+ if(pointInFootprint(p.x,p.z))return;
+ // Search a sufficiently dense interior grid; reliable for L-, T- and cross-shaped footprints.
+ let best=null,bd=Infinity;
+ for(let i=1;i<43;i++)for(let j=1;j<43;j++){
+   const x=(i/43)*state.w,z=(j/43)*state.l;
+   if(!pointInFootprint(x,z))continue;
+   const d=((p.x-x)/state.w)**2+((p.z-z)/state.l)**2;
+   if(d<bd){bd=d;best=[x,z]}
+ }
+ if(best){p.x=best[0];p.z=best[1]}
+}
+function footArea(){let pts=getFootprint(),area=0;for(let i=0;i<pts.length;i++){let a=pts[i],b=pts[(i+1)%pts.length];area+=a[0]*b[1]-b[0]*a[1]}return Math.abs(area)*.5}
+function footPerimeter(){let pts=getFootprint(),perim=0;for(let i=0;i<pts.length;i++){let a=pts[i],b=pts[(i+1)%pts.length];perim+=Math.hypot(a[0]-b[0],a[1]-b[1])}return perim}
+function chooseInstrument(id){const p=state.orchestra[id];if(!p)return;state.activeInstrument=id;state.source={...p};$('instrumentSelect').value=id;syncQuickInstruments();renderCoords();invalidate()}
+function updateSelectedInstrument(){if(state.activeInstrument&&state.orchestra[state.activeInstrument])state.orchestra[state.activeInstrument]={...state.source}}
+function syncQuickInstruments(){document.querySelectorAll('[data-instrument]').forEach(b=>b.classList.toggle('active',b.dataset.instrument===state.activeInstrument))}
+function refreshOrchestraUI(){
+ const ins=$('instrumentSelect'),selected=state.activeInstrument||'';
+ ins.innerHTML='<option value="">Freie Schallquelle (ohne Instrument)</option>';
+ for(const [id,name] of INSTRUMENTS){const o=document.createElement('option');o.value=id;o.textContent=name;ins.append(o)}ins.value=selected;syncQuickInstruments();
+ const list=$('orchestraLayouts');list.innerHTML='';
+ for(const [key,info] of Object.entries(ORCHESTRA_LAYOUTS)){let o=document.createElement('option');o.value=key;o.textContent=info.label;list.append(o)}
+ for(const [i,entry] of state.customOrchestra.entries()){let o=document.createElement('option');o.value='user_'+i;o.textContent='★ '+entry.name;list.append(o)}
+ list.value=state.orchestraLayout||'american';
+ const info=ORCHESTRA_LAYOUTS[state.orchestraLayout];$('orchestraInfo').textContent=info?.description||'Eigene gespeicherte Aufstellung: alle Positionen sind veränderbar.';
+}
+function refreshCustomPresetUI(){const select=$('micPreset');select.innerHTML='<option value="">Position manuell bestimmen</option>';for(const [key,p] of Object.entries(MICROPHONE_PRESETS)){let o=document.createElement('option');o.value=key;o.textContent=p.label;select.append(o)}for(const [i,p] of state.customMic.entries()){let o=document.createElement('option');o.value='user_'+i;o.textContent='★ '+p.name;select.append(o)}}
+function initNewControls(){initMixer();$('materialProfile').addEventListener('change',e=>applyMixPreset(e.target.value));refreshCustomPresetUI();refreshOrchestraUI();$('instrumentSelect').addEventListener('change',e=>{if(e.target.value)chooseInstrument(e.target.value);else{state.activeInstrument='';invalidate()}});document.querySelectorAll('[data-instrument]').forEach(b=>b.addEventListener('click',()=>chooseInstrument(b.dataset.instrument)));$('micPreset').addEventListener('change',e=>{const k=e.target.value;let p=k.startsWith('user_')?state.customMic[+k.slice(5)]:MICROPHONE_PRESETS[k];if(!p)return;let v=p.p;if(k==='near')v=[state.source.x/state.w,Math.max(1.5,state.source.y),Math.min(.95,state.source.z/state.l+.03)];if(!v)return;state.mic={x:v[0]*state.w,y:k==='ceiling'?state.h*.75:v[1],z:v[2]*state.l};constrainPoint(state.mic);state.micAngle=p.angle??0;syncControls();invalidate()});$('saveMicPreset').addEventListener('click',()=>{let n=$('micPresetName').value.trim();if(!n){$('micPresetName').focus();return}state.customMic.push({name:n,p:[state.mic.x/state.w,state.mic.y,state.mic.z/state.l],angle:state.micAngle});persistCustom();refreshCustomPresetUI();$('micPreset').value='user_'+(state.customMic.length-1);$('micPresetName').value='';help('Mikrofonposition gespeichert: '+n)});$('saveOrchestra').addEventListener('click',()=>{let n=$('orchestraName').value.trim();if(!n){$('orchestraName').focus();return}state.customOrchestra.push({name:n,positions:clone(state.orchestra)});state.orchestraLayout='user_'+(state.customOrchestra.length-1);persistCustom();refreshOrchestraUI();$('orchestraName').value='';$('layoutStatus').textContent='Aufstellung „'+n+'“ gespeichert.';help('Orchesteraufstellung gespeichert: '+n)});$('orchestraLayouts').addEventListener('change',e=>{
+ const k=e.target.value;state.orchestraLayout=k;
+ state.orchestra=k.startsWith('user_')?clone(state.customOrchestra[+k.slice(5)].positions):buildOrchestra(k);
+ for(const p of Object.values(state.orchestra))constrainPoint(p);
+ if(state.activeInstrument&&state.orchestra[state.activeInstrument])state.source={...state.orchestra[state.activeInstrument]};
+ refreshOrchestraUI();renderCoords();invalidate();
+ $('layoutStatus').textContent=k.startsWith('user_')?'Eigene Aufstellung geladen.':'Historisch dokumentierte Sitzordnungsvariante als Vorlage geladen.';
+});try{const s=JSON.parse(localStorage.getItem('raumklang_presets_v02')||'{}');state.customMic=s.mic||[];state.customOrchestra=s.orchestra||[];refreshCustomPresetUI();refreshOrchestraUI()}catch(err){}} 
+function persistCustom(){try{localStorage.setItem('raumklang_presets_v02',JSON.stringify({mic:state.customMic,orchestra:state.customOrchestra}))}catch(err){$('layoutStatus').textContent='Browser-Speicherung nicht verfügbar: bitte Projekt speichern.'}}
+
+function bindEvents(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tabpage').forEach(x=>x.classList.toggle('active',x.id==='tab-'+b.dataset.tab))});document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>setPreset(b.dataset.preset));for(const id of ['width','length','height'])$(id).addEventListener('input',dimensionChanged);for(const [id,key] of [['damping','damp'],['diffusion','diffusion'],['wet','wet'],['duration','duration'],['micAngle','micAngle']])$(id).addEventListener('input',e=>{state[key]=+e.target.value;syncControls();if(key==='wet')return;invalidate()});$('format').onchange=e=>{state.format=e.target.value;$('download').disabled=state.irMode!==state.format;help('Exportformat geändert – ggf. neue Impulsantwort berechnen.');};$('generate').onclick=()=>{try{const mode=state.format;help('Berechne Impulsantwort ...');$('generate').disabled=true;setTimeout(()=>{try{state.ir=generateIR(mode);state.irMode=mode;$('download').disabled=false;renderWave();help(`Fertig: ${mode==='foa'?'4-Kanal-Ambisonics FOA':'Stereo'} · ${state.ir.seconds.toFixed(2)} s · ${state.ir.events} frühe Schallwege. WAV-Export bereit.`)}catch(e){help(e.message,true)}finally{$('generate').disabled=false}},30)}catch(e){help(e.message,true)}};$('download').onclick=()=>{if(!state.ir||state.irMode!==state.format)return;const filename=`RaumKlang_${state.preset}_${state.shape}_${state.format}_${state.w}x${state.l}x${state.h}m_48k_24bit.wav`;downloadBlob(wav24(state.ir),filename);help('WAV heruntergeladen: '+filename)};$('listen').onclick=preview;$('stopSound').onclick=stopSound;$('resetCamera').onclick=()=>{state.yaw=-.65;state.pitch=.43;state.zoom=1;render3D()};
+// canvas orbit
+const view=$('view3d');let drag=null;view.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};view.setPointerCapture(e.pointerId)});view.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;state.yaw+=dx*.007;state.pitch=clamp(state.pitch+dy*.006,-.25,1.28);drag={x:e.clientX,y:e.clientY};render3D()});view.addEventListener('pointerup',()=>drag=null);view.addEventListener('pointercancel',()=>drag=null);view.addEventListener('wheel',e=>{e.preventDefault();state.zoom=clamp(state.zoom*(e.deltaY>0?.9:1.1),.45,3);render3D()},{passive:false});
+// interactive plan
+const plan=$('plan');let planDrag=null;function localPoint(e){let rc=plan.getBoundingClientRect(),sx=plan.width/rc.width,sy=plan.height/rc.height;return {x:(e.clientX-rc.left)*sx,y:(e.clientY-rc.top)*sy}}function updatePlan(e,begin=false){
+  const {x,y}=localPoint(e),r=planRect(plan.width,plan.height);
+  if(begin){
+    const srcPt=worldToPlan(state.source.x,state.source.z,r);
+    const micPt=worldToPlan(state.mic.x,state.mic.z,r);
+    const aim=micArrowPoints(r);
+    if(Math.hypot(x-aim.tip.x,y-aim.tip.y)<19){planDrag='angle';plan.setPointerCapture(e.pointerId);setMicDirectionFromPlan(x,y,r);return;}
+    if(Math.hypot(x-srcPt.x,y-srcPt.y)<13){planDrag='source';plan.setPointerCapture(e.pointerId)}
+    else if(Math.hypot(x-micPt.x,y-micPt.y)<13){planDrag='mic';plan.setPointerCapture(e.pointerId)}
+    else if(isPerformance()){
+      let selected=INSTRUMENTS.map(([id])=>{let pos=state.orchestra[id],pt=worldToPlan(pos.x,pos.z,r);return {id,d:Math.hypot(x-pt.x,y-pt.y)}}).sort((a,b)=>a.d-b.d)[0];
+      if(selected&&selected.d<10){chooseInstrument(selected.id);renderAll();return;}
+    }
+    if(!planDrag){const nearest=[['source',state.source],['mic',state.mic]].map(([k,pos])=>{let pt=worldToPlan(pos.x,pos.z,r);return{k,d:Math.hypot(x-pt.x,y-pt.y)}}).sort((a,b)=>a.d-b.d);planDrag=nearest[0].k;plan.setPointerCapture(e.pointerId)}
+  }
+  if(!planDrag)return;
+  if(planDrag==='angle'){setMicDirectionFromPlan(x,y,r);return;}
+  const pt=planToWorld(x,y,r);
+  state[planDrag].x=pt.x;state[planDrag].z=pt.z;
+  constrainPoint(state[planDrag]);
+  if(planDrag==='source')updateSelectedInstrument();renderCoords();invalidate();
+}
+plan.addEventListener('pointerdown',e=>updatePlan(e,true));plan.addEventListener('pointermove',e=>{if(planDrag)updatePlan(e)});plan.addEventListener('pointerup',()=>planDrag=null);plan.addEventListener('pointercancel',()=>planDrag=null);
+$('imageUpload').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{let u=URL.createObjectURL(file),im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=u});let cc=document.createElement('canvas');cc.width=80;cc.height=80;let cx=cc.getContext('2d');cx.drawImage(im,0,0,80,80);let data=cx.getImageData(0,0,80,80).data,sum=[0,0,0],n=0;for(let k=0;k<data.length;k+=16){if(data[k+3]<50)continue;sum[0]+=data[k];sum[1]+=data[k+1];sum[2]+=data[k+2];n++}const hex=sum.map(v=>Math.round(v/n).toString(16).padStart(2,'0')).join('');state.color='#'+hex;state.image=im.src;let pre=$('uploadedPreview');pre.src=im.src;pre.classList.add('visible');$('imageStatus').textContent=`Bild „${file.name}“ geladen (${im.width} × ${im.height}). Farbstimmung übernommen; Raumgeometrie bitte noch manuell einstellen.`;invalidate()}catch(err){$('imageStatus').textContent='Bild konnte nicht geladen werden: '+err.message}};
+$('createConcept').onclick=()=>{
+ const prompt=$('fantasyPrompt').value.trim(); if(!prompt)return;
+ const preset=textScenePreset(prompt); setPreset(preset);state.imageRecon=null;state.image=null;
+ for(const [key,rng] of [['l',[6,160]],['w',[5,110]],['h',[3,75]]]){
+  const value=textNumericDimension(prompt,key);if(value!==null)state[key]=clamp(value,rng[0],rng[1]);
+ }
+ const shape=effectiveTextShape(prompt); if(shape)setTextDefinedShape(shape,prompt);
+ state.source={x:state.w*.5,y:Math.min(state.h-.4,2),z:state.l*.25};
+ state.mic={x:state.w*.5,y:Math.min(state.h-.4,2),z:state.l*.72};
+ constrainPoint(state.source); constrainPoint(state.mic);
+ syncControls();generateConceptArt(prompt);invalidate();updateTextShapeRecognition();
+ $('conceptStatus').textContent=shape ? `3D-Raum mit ${SHAPE_NAMES[shape]} erzeugt. Grundriss und frühe Wandreflexionen nutzen die neue Form. Die Skizze ist keine echte KI-Bildgenerierung.` : 'Raumtyp und Maße aus dem Text übernommen. Wenn die Grundform wichtig ist, bitte im Text nennen oder oben auswählen.';
+};
+$('audioUpload').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;try{let ac=state.audioCtx||(state.audioCtx=new (window.AudioContext||window.webkitAudioContext)());let arr=await file.arrayBuffer();state.audioData=await ac.decodeAudioData(arr);$('audioStatus').textContent=`Eigene Audiodatei: ${file.name} (${state.audioData.duration.toFixed(1)} s)`}catch(err){$('audioStatus').textContent='Audio konnte nicht geladen werden: '+err.message}};
+$('saveProject').onclick=()=>{let keys=['preset','shape','w','l','h','walls','floor','ceiling','surfaceMix','color','source','mic','micAngle','damp','diffusion','wet','duration','format','yaw','pitch','zoom','orchestra','orchestraLayout','activeInstrument','customMic','customOrchestra'];let data={application:'RaumKlang AI',version:'0.9',settings:Object.fromEntries(keys.map(k=>[k,state[k]])),prompt:$('fantasyPrompt').value};downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),`RaumKlang_Projekt_${state.preset}.json`)};
+$('loadProject').onchange=async e=>{try{let t=await e.target.files[0].text(),j=JSON.parse(t);if(j.application!=='RaumKlang AI'||!j.settings)throw Error('Kein gültiges RaumKlang-Projekt');const s=j.settings;for(const key of ['preset','shape','w','l','h','walls','floor','ceiling','surfaceMix','color','source','mic','micAngle','damp','diffusion','wet','duration','format','yaw','pitch','zoom','orchestra','orchestraLayout','activeInstrument','customMic','customOrchestra'])if(s[key]!==undefined)state[key]=s[key];state.shape=state.shape||PRESETS[state.preset]?.shape||'rect';state.orchestra=state.orchestra||buildOrchestra();if(!s.surfaceMix){state.surfaceMix=clone(MIX_PRESETS.default);for(const surface of ['walls','floor','ceiling'])state.surfaceMix[surface]=[[state[surface],100],['stone',0]]}state.customMic=state.customMic||[];state.customOrchestra=state.customOrchestra||[];$('roomHeading').textContent=PRESETS[state.preset]?.title||'Geladener Raum';$('fantasyPrompt').value=j.prompt||'';refreshOrchestraUI();refreshCustomPresetUI();syncControls();invalidate();help('Projekt geladen.')}catch(err){help('Projekt konnte nicht geöffnet werden: '+err.message,true)}};
+window.addEventListener('resize',renderAll);
+}
+function generateConceptArt(prompt){
+ const shape=state.shape;
+ // Bei klaren geometrischen Formen verwendet die Konzeptskizze denselben Grundriss
+ // wie 3D, Grundriss und Akustikberechnung (statt einen falschen rechteckigen Saal zu zeigen).
+ if(['hexagon','octagon','pentagon','triangle'].includes(shape)){
+  const cv=document.createElement('canvas');cv.width=960;cv.height=530;
+  const c=cv.getContext('2d'),w=cv.width,h=cv.height;
+  const bg=c.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#202e45');bg.addColorStop(1,'#09111c');c.fillStyle=bg;c.fillRect(0,0,w,h);
+  for(let i=0;i<25;i++){c.strokeStyle='rgba(137,157,176,.07)';c.beginPath();c.moveTo(i*w/24,0);c.lineTo(i*w/24,h);c.stroke();}
+  const pts=getFootprint();const center={x:480,y:260};const radius=155;const proj=(x,z,height=0)=>({x:center.x+(x/state.w-.5)*radius*2.15+(z/state.l-.5)*radius*.67,y:center.y+(z/state.l-.5)*radius*.80+(x/state.w-.5)*radius*.34-height*3.2});
+  const floor=pts.map(([x,z])=>proj(x,z));const top=pts.map(([x,z])=>proj(x,z,state.h*.52));
+  c.beginPath();floor.forEach((pt,i)=>i?c.lineTo(pt.x,pt.y):c.moveTo(pt.x,pt.y));c.closePath();c.fillStyle='rgba(201,157,99,.25)';c.fill();c.strokeStyle='#e9c58d';c.lineWidth=5;c.stroke();
+  for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;c.beginPath();c.moveTo(floor[i].x,floor[i].y);c.lineTo(floor[j].x,floor[j].y);c.lineTo(top[j].x,top[j].y);c.lineTo(top[i].x,top[i].y);c.closePath();c.fillStyle=i%2?'rgba(166,168,178,.14)':'rgba(175,144,104,.21)';c.fill();c.strokeStyle='rgba(225,204,160,.55)';c.lineWidth=2;c.stroke();}
+  c.font='bold 26px Segoe UI';c.fillStyle='#f4dfb9';c.fillText(SHAPE_NAMES[shape],32,52);
+  c.font='17px Segoe UI';c.fillStyle='#bad1e5';c.fillText(`${pts.length} Wände · ${state.w} × ${state.l} × ${state.h} m · aus Text`,32,86);
+  c.font='16px Segoe UI';c.fillStyle='#d7b888';c.fillText('Schematische Raumskizze – noch kein KI-generiertes Bild',32,h-28);
+  const img=$('generatedPreview');img.src=cv.toDataURL('image/png');img.classList.add('visible');state.generated=img.src;
+  return;
+ }
+ const cv=document.createElement('canvas');cv.width=960;cv.height=530;let c=cv.getContext('2d'),w=cv.width,h=cv.height;let forest=state.preset==='forest',ice=state.preset==='ice',dwarf=state.preset==='dwarf',cave=state.preset==='cave';const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,forest?'#193d45':ice?'#164567':dwarf?'#2c2934':cave?'#1a2637':'#313c52');sky.addColorStop(.65,forest?'#639078':ice?'#6d9ba7':dwarf?'#786854':cave?'#4b565e':'#98877a');sky.addColorStop(1,'#101924');c.fillStyle=sky;c.fillRect(0,0,w,h);let seed=0;for(let i=0;i<prompt.length;i++)seed=((seed*31+prompt.charCodeAt(i))|0);const rand=()=>{seed=(seed*1664525+1013904223)|0;return (seed>>>0)/4294967296};if(forest){for(let i=0;i<35;i++){let x=rand()*w,y=170+rand()*190,k=.35+rand()*.8;c.fillStyle='#172f2e';c.fillRect(x-8*k,y,15*k,h-y);c.beginPath();c.ellipse(x,y-5,35*k,94*k,0,0,2*Math.PI);c.fillStyle=i%3===0?'#2c665d':'#1b4945';c.fill()}}else{const vp=w*.5;for(let i=0;i<9;i++){let t=i/9,depth=Math.pow(1-t,2),margin=40+(w*.39)*depth,y=90+t*220,cw=w/2-margin;c.strokeStyle=ice?'#a4dbe0bb':dwarf?'#9c8a6daa':'#a0abb6aa';c.lineWidth=3+t*12;c.beginPath();c.moveTo(margin,h);c.lineTo(margin,y);c.quadraticCurveTo(vp,y-160*(1-t),w-margin,y);c.lineTo(w-margin,h);c.stroke();if(cave){for(let j=0;j<8;j++){let x=margin+rand()*(w-margin*2);c.beginPath();c.moveTo(x,y);c.lineTo(x+rand()*18,y+rand()*90);c.lineTo(x+30,y);c.fillStyle='#55647365';c.fill()}}}}
+const floor=c.createLinearGradient(0,h*.56,0,h);floor.addColorStop(0,'#75809511');floor.addColorStop(1,'#111922ee');c.beginPath();c.moveTo(0,h);c.lineTo(w*.32,h*.55);c.lineTo(w*.68,h*.55);c.lineTo(w,h);c.fillStyle=floor;c.fill();const light=c.createRadialGradient(w*.5,h*.42,15,w*.5,h*.42,h*.67);light.addColorStop(0,forest?'#e2e8b95b':ice?'#a8f0ed77':'#e4b7815c');light.addColorStop(1,'#f2c79a00');c.fillStyle=light;c.fillRect(0,0,w,h);const img=$('generatedPreview');img.src=cv.toDataURL('image/png');img.classList.add('visible');state.generated=img.src}
+
+// --- Bild-zu-Raum-Rekonstruktion, erste automatische Prototypstufe ---
+state.imageRecon=null; state.imageFileName=''; state.imageAutoApply=true;
+function initImageRoomReconstruction(){
+  const tab=document.getElementById('tab-upload'); if(!tab) return;
+  if(!document.getElementById('reconstructImageBtn')){
+    const box=document.createElement('div');
+    box.innerHTML=`<div class="separator" style="margin:12px 0"></div>
+      <div class="subtle" style="margin-bottom:8px">Automatische Bild-zu-Raum-Rekonstruktion</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="mainbtn" id="reconstructImageBtn">Raum aus Bild ableiten</button>
+        <button class="smbtn" id="applyImageBtn">Analyse übernehmen</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#c7d0de;margin-top:10px"><input id="autoApplyImage" type="checkbox" checked> Analyse nach dem Laden direkt übernehmen</label>
+      <canvas id="imageAnalysisCanvas" style="width:100%;height:178px;border:1px solid #334154;border-radius:10px;background:#0a111c;margin-top:10px"></canvas>
+      <p class="hint" id="imageAnalysisSummary">Noch keine Analyse vorhanden.</p>`;
+    tab.appendChild(box);
+  }
+  const up=$('imageUpload');
+  up.onchange=async e=>{const file=e.target.files?.[0]; if(!file) return; await loadAndAnalyzeRoomImage(file)};
+  $('autoApplyImage').onchange=e=>state.imageAutoApply=e.target.checked;
+  $('reconstructImageBtn').onclick=()=>{if(state._loadedImage){const a=analyzeRoomImage(state._loadedImage,state.imageFileName);a.color=averageImageColor(state._loadedImage).hex;state.imageRecon=a;drawImageAnalysisPreview(state._loadedImage,a);$('imageAnalysisSummary').textContent=`Erkannt: ${a.label} · ${a.shapeLabel} · ${a.w} × ${a.l} × ${a.h} m`;if(state.imageAutoApply)applyImageReconstruction(a,true)}};
+  $('applyImageBtn').onclick=()=>{if(state.imageRecon) applyImageReconstruction(state.imageRecon,true)};
+}
+async function loadAndAnalyzeRoomImage(file){
+  try{
+    const url=URL.createObjectURL(file); const im=new Image();
+    await new Promise((ok,no)=>{im.onload=ok; im.onerror=no; im.src=url});
+    state._loadedImage=im; state.image=im.src; state.imageFileName=file.name||'';
+    const avg=averageImageColor(im); state.color=avg.hex;
+    let pre=$('uploadedPreview'); pre.src=im.src; pre.classList.add('visible');
+    const a=analyzeRoomImage(im,state.imageFileName); a.color=avg.hex; state.imageRecon=a;
+    drawImageAnalysisPreview(im,a);
+    $('imageAnalysisSummary').textContent=`Erkannt: ${a.label} · Grundform ${a.shapeLabel} · ca. ${a.w} × ${a.l} × ${a.h} m · Vertrauen ${Math.round(a.confidence*100)} %.`;
+    $('imageStatus').textContent=`Bild „${file.name}“ geladen (${im.width} × ${im.height}). Die automatische Rekonstruktion ist bereit.`;
+    if(state.imageAutoApply) applyImageReconstruction(a,false); else invalidate();
+  }catch(err){$('imageStatus').textContent='Bild konnte nicht geladen werden: '+err.message;}
+}
+function averageImageColor(im){
+  const cv=document.createElement('canvas'); cv.width=80; cv.height=80; const cx=cv.getContext('2d'); cx.drawImage(im,0,0,80,80);
+  const data=cx.getImageData(0,0,80,80).data; let sum=[0,0,0],n=0;
+  for(let k=0;k<data.length;k+=16){ if(data[k+3]<30) continue; sum[0]+=data[k]; sum[1]+=data[k+1]; sum[2]+=data[k+2]; n++; }
+  const rgb=sum.map(v=>Math.round(v/Math.max(1,n))); const hex='#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('');
+  return {rgb,hex};
+}
+function analyzeRoomImage(im,fileName=''){
+  const W=240,H=180,cv=document.createElement('canvas'); cv.width=W; cv.height=H; const cx=cv.getContext('2d',{willReadFrequently:true}); cx.drawImage(im,0,0,W,H);
+  const src=cx.getImageData(0,0,W,H).data; const gray=new Float32Array(W*H), sat=new Float32Array(W*H);
+  let avgR=0,avgG=0,avgB=0;
+  for(let i=0,j=0;i<src.length;i+=4,j++){ const r=src[i],g=src[i+1],b=src[i+2]; avgR+=r; avgG+=g; avgB+=b; gray[j]=0.299*r+0.587*g+0.114*b; const max=Math.max(r,g,b), min=Math.min(r,g,b); sat[j]=max?((max-min)/max):0; }
+  const px=W*H; avgR/=px; avgG/=px; avgB/=px;
+  const sample=(x,y)=>gray[Math.max(0,Math.min(H-1,y))*W+Math.max(0,Math.min(W-1,x))];
+  const edge=new Float32Array(W*H); let edgeMean=0;
+  for(let y=1;y<H-1;y++) for(let x=1;x<W-1;x++){ const gx=-sample(x-1,y-1)-2*sample(x-1,y)-sample(x-1,y+1)+sample(x+1,y-1)+2*sample(x+1,y)+sample(x+1,y+1); const gy=-sample(x-1,y-1)-2*sample(x,y-1)-sample(x+1,y-1)+sample(x-1,y+1)+2*sample(x,y+1)+sample(x+1,y+1); const m=Math.hypot(gx,gy); edge[y*W+x]=m; edgeMean+=m; }
+  edgeMean/=px;
+  // symmetry / central axis
+  let bestCx=W/2, bestScore=-1;
+  for(let cx0=Math.floor(W*.25); cx0<=Math.floor(W*.75); cx0+=2){ let score=0,count=0; for(let y=Math.floor(H*.15); y<H; y+=2){ for(let dx=0; dx<Math.min(cx0,W-cx0)-2; dx+=4){ const a=sample(cx0-dx,y), b=sample(cx0+dx,y); score += 255-Math.abs(a-b); count++; }} score/=Math.max(1,count); if(score>bestScore){bestScore=score; bestCx=cx0;}}
+  const symmetry=clamp((bestScore-120)/100,0,1);
+  // left/right boundary detection
+  const left=[], right=[]; let prevL=W*.2, prevR=W*.8;
+  for(let y=Math.floor(H*.18); y<H-4; y++){ let bestLV=-1,bestLX=prevL, bestRV=-1,bestRX=prevR;
+    for(let x=4; x<bestCx-4; x++){ const v=edge[y*W+x] + Math.abs(sample(x+1,y)-sample(x-1,y))*1.8 - Math.abs(x-prevL)*0.45; if(v>bestLV){bestLV=v; bestLX=x;}}
+    for(let x=W-5; x>bestCx+4; x--){ const v=edge[y*W+x] + Math.abs(sample(x+1,y)-sample(x-1,y))*1.8 - Math.abs(x-prevR)*0.45; if(v>bestRV){bestRV=v; bestRX=x;}}
+    prevL=bestLX; prevR=bestRX; left.push(bestLX); right.push(bestRX);
+  }
+  const bands=(arr,a,b)=>arr.slice(Math.floor(arr.length*a),Math.floor(arr.length*b));
+  const med=v=>{const a=[...v].sort((x,y)=>x-y); return a.length?a[Math.floor(a.length/2)]:0};
+  const widths=left.map((v,i)=>right[i]-v); const topW=med(bands(widths,.05,.18)), midW=med(bands(widths,.42,.58)), botW=med(bands(widths,.78,.94));
+  const expansion=(botW-topW)/W; const narrowing=(midW-topW)/W;
+  const irregularity = widths.reduce((s,v,i)=>s+(i?Math.abs(v-widths[i-1]):0),0)/(widths.length*W);
+  const topBright=(()=>{let s=0,n=0; for(let y=0;y<H*.25;y+=2) for(let x=0;x<W;x+=2){s+=sample(x,y);n++;} return s/n})();
+  const midBright=(()=>{let s=0,n=0; for(let y=H*.35;y<H*.65;y+=2) for(let x=0;x<W;x+=2){s+=sample(x,y);n++;} return s/n})();
+  const lowBright=(()=>{let s=0,n=0; for(let y=H*.7;y<H;y+=2) for(let x=0;x<W;x+=2){s+=sample(x,y);n++;} return s/n})();
+  const warm=avgR-avgB, green=avgG-(avgR+avgB)/2, blue=avgB-(avgR+avgG)/2;
+  const avgGray=(avgR+avgG+avgB)/3; const avgSat=sat.reduce((a,b)=>a+b,0)/sat.length;
+  const centerDark=(()=>{let s=0,n=0; for(let y=H*.42;y<H*.72;y+=2) for(let x=W*.36;x<W*.64;x+=2){s+=sample(x|0,y|0);n++;} return s/n})();
+  const isOpen = green>10 && topBright>85 && irregularity<.12;
+  const isIce = blue>8 && avgGray>95;
+  const isVeryDark = avgGray<78;
+  const performanceLike = symmetry>.56 && avgSat>.14 && warm>4;
+  const sacredLike = symmetry>.64 && topBright>midBright*0.97 && !isVeryDark;
+  let kind='castle';
+  const name=(fileName||'').toLowerCase();
+  const fileBias=(pat,val)=>pat.test(name)?val:null;
+  kind = fileBias(/opera|theater|buehne|bühne/, 'opera') || fileBias(/concert|konzert|hall|saal/, 'concert') || fileBias(/church|kirch|kathedral|cathedral/, 'cathedral') || fileBias(/dungeon|krypt|crypt/, 'dungeon') || fileBias(/cave|grotte|hoehle|höhle/, 'cave') || fileBias(/ice|eis|glacier|gletscher/, 'ice') || fileBias(/forest|wald|hain/, 'forest') || fileBias(/dwarf|zwerg|mine|forge|schmiede/, 'dwarf') || fileBias(/castle|burg|schloss|palast/, 'castle') || null;
+  if(!kind){
+    if(isOpen) kind='forest';
+    else if(isIce) kind='ice';
+    else if(isVeryDark && irregularity>.18) kind='cave';
+    else if(sacredLike && topBright>95) kind='cathedral';
+    else if(performanceLike && /red|curtain|opera|stage/.test(name)) kind='opera';
+    else if(performanceLike && centerDark<midBright*.95) kind='concert';
+    else if(isVeryDark && symmetry>.55 && warm>3) kind='dwarf';
+    else kind='castle';
+  }
+  let shape='rect';
+  if(kind==='forest') shape='organic';
+  else if(kind==='cave' || kind==='dwarf' || kind==='ice' || kind==='dungeon'){ shape = irregularity>.2 ? 'organic' : expansion>.22 ? 'fan' : 'oval'; }
+  else if(kind==='opera'){ shape = expansion>.25 ? 'fan' : avgSat>.18 ? 'horseshoe' : 'italian'; }
+  else if(kind==='concert'){ shape = expansion>.26 ? 'fan' : symmetry>.75 && irregularity<.10 ? 'vineyard' : (botW/W>.72 ? 'round' : 'rect'); }
+  else if(kind==='cathedral'){ shape = symmetry>.72 && expansion<.16 ? 'rect' : (botW/W>.72 ? 'oval' : 'rect'); }
+  else if(kind==='castle'){ shape = expansion>.24 ? 'fan' : 'rect'; }
+  const shapeLabel={rect:'Rechteck',fan:'Fächer',oval:'Oval',round:'Rund',vineyard:'Weinberg',horseshoe:'Hufeisen',italian:'Rangsaal',organic:'Organisch'}[shape]||shape;
+  const w=Math.round(clamp(10 + (botW/W)*56 + (kind==='forest'?8:0), kind==='forest'?18:10, kind==='forest'?90:75));
+  const l=Math.round(clamp(18 + (1-topW/Math.max(1,botW))*90 + symmetry*12, 12, 150));
+  const h=Math.round(clamp(6 + ((topBright-midBright+70)/140)*22 + (kind==='cathedral'?10:0) + (kind==='concert'||kind==='opera'?6:0), 4, 48));
+  const confidence=clamp(.45 + symmetry*.18 + (kind!=='castle'?0.12:0) + (Math.abs(expansion)>.12?0.06:0) + (avgSat>.17?0.06:0), .35, .93);
+  const presets={forest:'forest',ice:'ice',cave:'cave',dungeon:'dungeon',cathedral:'cathedral',concert:shape==='fan'?'concert_fan':shape==='round'?'concert_round':shape==='vineyard'?'concert_vineyard':'concert_shoebox',opera:shape==='fan'?'opera_fan':shape==='oval'?'opera_oval':shape==='italian'?'opera_italian':'opera_horseshoe',dwarf:'dwarf',castle:'castle'};
+  let preset=presets[kind]||'castle';
+  return {preset,kind,label:roomLabel(kind),shape,shapeLabel,w,l,h,axisX:bestCx/W, symmetry, left,right, topW,midW,botW, expansion, irregularity, confidence, source:{x:w*.5,y:clamp(kind==='cathedral'?2.2:1.7,1.4,h-1),z:l*.2}, mic:{x:w*.5,y:clamp(kind==='concert'||kind==='opera'?3.2:1.8,1.4,h-1),z:l*.68}};
+}
+function roomLabel(kind){return ({forest:'Wald / offener Raum',ice:'Eishöhle',cave:'Höhle',dungeon:'Dungeon',cathedral:'Kirche / Kathedrale',concert:'Konzertsaal',opera:'Opernhaus',dwarf:'Zwergenhalle',castle:'Burg / Saal'})[kind]||'Raum';}
+function drawImageAnalysisPreview(im,a){
+  const cv=$('imageAnalysisCanvas'); if(!cv) return; const {c,w,h}=fitCanvas(cv); c.clearRect(0,0,w,h); c.fillStyle='#08101a'; c.fillRect(0,0,w,h);
+  const s=Math.min(w/im.width,h/im.height), dw=im.width*s, dh=im.height*s, ox=(w-dw)/2, oy=(h-dh)/2; c.drawImage(im,ox,oy,dw,dh);
+  c.save(); c.strokeStyle='rgba(255,215,140,.95)'; c.lineWidth=2.2; c.beginPath();
+  for(let i=0;i<a.left.length;i++){ const y=oy+(i/(a.left.length-1))*dh*.82+dh*.18; const x=ox+(a.left[i]/240)*dw; if(i===0)c.moveTo(x,y); else c.lineTo(x,y);} c.stroke();
+  c.beginPath(); for(let i=0;i<a.right.length;i++){ const y=oy+(i/(a.right.length-1))*dh*.82+dh*.18; const x=ox+(a.right[i]/240)*dw; if(i===0)c.moveTo(x,y); else c.lineTo(x,y);} c.stroke();
+  const vx=ox+a.axisX*dw, vy=oy+dh*.18; c.strokeStyle='#55e1ff'; c.lineWidth=2; c.beginPath(); c.moveTo(vx,oy+8); c.lineTo(vx,oy+dh-8); c.stroke(); c.beginPath(); c.arc(vx,vy,5,0,Math.PI*2); c.fillStyle='#55e1ff'; c.fill();
+  c.fillStyle='rgba(5,12,20,.6)'; c.fillRect(10,h-35,w-20,25); c.fillStyle='#f7e0ad'; c.font='bold 12px Segoe UI'; c.textAlign='left'; c.fillText(`Auto: ${a.label} · ${a.shapeLabel}`,18,h-18);
+  c.restore();
+}
+function applyImageReconstruction(a,manual){
+  setPreset(a.preset);
+  state.shape=SHAPE_NAMES[a.shape]?a.shape:state.shape;
+  state.w=a.w; state.l=a.l; state.h=a.h; state.source={...a.source}; state.mic={...a.mic}; state.color=a.color||state.color||'#a18d75';
+  constrainPoint(state.source); constrainPoint(state.mic); state.imageRecon=a;
+  $('roomHeading').textContent = `${a.label} · ${SHAPE_NAMES[state.shape]||a.shapeLabel} · aus Bild abgeleitet`;const title=$('formTitle');if(title && effectiveTextShape($('fantasyPrompt').value))title.textContent=`Eigene Grundform · ${SHAPE_NAMES[state.shape]||a.shapeLabel}`;
+  syncControls(); invalidate();
+  help(`Bildanalyse übernommen: ${a.label}, ${a.shapeLabel}, ca. ${a.w} × ${a.l} × ${a.h} m.`);
+  if(manual) $('imageStatus').textContent='Die Bildanalyse wurde auf den Raum übernommen.';
+}
+const __render3D_base=render3D; render3D=function(){ __render3D_base(); if(!state.image||!state.imageRecon)return; const cv=$('view3d'), c=cv.getContext('2d'); if(!c) return; const im=$('uploadedPreview'); if(!im||!im.src) return; c.save(); c.globalAlpha=.12; try{ c.drawImage(im,cv.width*.66,12,cv.width*.3,cv.height*.22); }catch(e){} c.globalAlpha=1; c.fillStyle='#e8c994'; c.font='bold 11px Segoe UI'; c.textAlign='right'; c.fillText('Bild-Rekonstruktion aktiv',cv.width-10,cv.height-10); c.restore(); }
+const __renderPlan_base=renderPlan; renderPlan=function(){ __renderPlan_base(); if(!state.imageRecon)return; const cv=$('plan'), c=cv.getContext('2d'); c.save(); c.fillStyle='rgba(5,11,18,.62)'; c.fillRect(8,8,164,32); c.fillStyle='#cfe5ff'; c.font='11px Segoe UI'; c.fillText(`Auto: ${state.imageRecon.shapeLabel}`,16,21); c.fillStyle='#f0d39e'; c.fillText(`${state.imageRecon.w} × ${state.imageRecon.l} × ${state.imageRecon.h} m`,16,34); c.restore(); }
+
+// v0.11: optionale echte Bild-KI (lokaler Server) + Text zu Raum.
+let aiGeneratedBytes=null,aiGeneratedFile=null,aiScenePrompt='';
+const aiStatus=(message,error=false)=>{const el=$('aiProgress');if(!el)return;el.textContent=message;el.classList.toggle('error',error)};
+const aiStage=(stage)=>{document.querySelectorAll('#aiPipe span').forEach((el,i)=>el.classList.toggle('active',i===stage))};
+function textSceneKind(text){
+ const s=text.toLowerCase();
+ if(/wald|elfen|lichtung|hain|bäume/.test(s))return'forest';
+ if(/eis|gletscher|frost|schnee/.test(s))return'ice';
+ if(/zwerg|granit|berghalle|mine|schmiede/.test(s))return'dwarf';
+ if(/dungeon|verlies|krypt|katakomb|kerker/.test(s))return'dungeon';
+ if(/höhle|grotte|tropfstein|felsspalte/.test(s))return'cave';
+ if(/burg|schloss|rittersaal|thronsaal|festung/.test(s))return'castle';
+ if(/oper|opernhaus|theater|rangsaal/.test(s))return'opera';
+ if(/konzert|orchester|symphonie|konzerthalle/.test(s))return'concert';
+ if(/kirche|dom|kapelle|kathedrale|basilika/.test(s))return'cathedral';
+ return'castle';
+}
+const SHAPE_NAMES={hexagon:'Sechseck (6 Wände)',octagon:'Achteck (8 Wände)',pentagon:'Fünfeck (5 Wände)',triangle:'Dreieck (3 Wände)',rect:'Rechteck (4 Wände)',round:'Rundsaal',oval:'Oval',cross:'Kreuzform',lwing:'L-Form',fan:'Fächerform',horseshoe:'Hufeisenform',organic:'Organisch',vineyard:'Weinberg',italian:'Rangsaal'};
+function textRequestedShape(text){
+  const t=(text||'').toLowerCase();
+  const entries=[
+    ['hexagon',/(?:sechs\s*(?:eck|seit|kant)|sechseck|secheck|sechsseit|hexagon|hexagonal|6[\s-]*(?:eck|seit|kant)|sechs\s+ecken)/],
+    ['octagon',/(?:acht\s*(?:eck|seit|kant)|achteck|achtseit|oktagon|octagon|8[\s-]*(?:eck|seit|kant)|acht\s+ecken)/],
+    ['pentagon',/(?:fünf\s*(?:eck|seit)|fuenfeck|fünfeck|pentagon|5[\s-]*(?:eck|seit))/],
+    ['triangle',/(?:drei\s*(?:eck|seit)|dreieck|3[\s-]*(?:eck|seit)|triangul)/],
+    ['cross',/(?:kreuzförmig|kreuzfoermig|kreuzgrundriss|kreuzkirche)/],
+    ['lwing',/(?:l[\s-]*förmig|l[\s-]*foermig|l[\s-]*form|winkelgang)/],
+    ['horseshoe',/(?:hufeisenförmig|hufeisenfoermig|hufeisenform)/],
+    ['fan',/(?:fächerförmig|faecherfoermig|fächerform|fächersaal)/],
+    ['oval',/(?:oval|elliptisch)/],
+    ['round',/(?:rund\w*|kreisförmig|kreisfoermig|kreisrund|rotunde)/],
+    ['rect',/(?:rechteck|viereck|vierseitig|quadratisch|quadratförmig)/]
+  ];
+  for(const [shape,re] of entries)if(re.test(t))return shape;
+  return null;
+}
+function effectiveTextShape(prompt){
+ const control=$('textShapeChoice'); const pick=control?.value;
+ return pick && pick!=='auto' ? pick : textRequestedShape(prompt);
+}
+function updateTextShapeRecognition(){
+ const txt=$('fantasyPrompt')?.value||'',shape=effectiveTextShape(txt),out=$('textShapeRecognized');
+ if(out)out.textContent=shape ? `✓ Geometrie erkannt: ${SHAPE_NAMES[shape]||shape} – wird im Grundriss, in 3D und in der Impulsantwort verwendet.` : 'Keine eindeutige Form erkannt – die Grundform der Raumvorlage wird verwendet.';
+}
+function setTextDefinedShape(shape,prompt){
+ if(!shape) return;
+ const explicitLength=textNumericDimension(prompt,'l');
+ const explicitWidth=textNumericDimension(prompt,'w');
+ // Polygon ohne explizite Längen/Breiten startet quadratisch (regelmäßiges Sechseck).
+ if(['hexagon','octagon','pentagon','triangle','round'].includes(shape)){
+   if(explicitLength===null && explicitWidth===null){state.w=state.l=Math.max(12,Math.min(75,state.w));}
+   else if(explicitLength!==null && explicitWidth===null)state.w=state.l;
+   else if(explicitWidth!==null && explicitLength===null)state.l=state.w;
+ }
+ state.shape=shape;
+ for(const point of [state.source,state.mic])constrainPoint(point);
+ $('roomHeading').textContent=`${roomLabel(roomCategory(state.preset))} · ${SHAPE_NAMES[shape]||shape}`;
+ const title=$('formTitle'); if(title) title.textContent=`Eigene Grundform · ${SHAPE_NAMES[shape]||shape}`;
+}
+function textScenePreset(prompt){
+ const kind=textSceneKind(prompt),t=prompt.toLowerCase();
+ if(kind==='concert')return /fächer/.test(t)?'concert_fan':/rund|kreis/.test(t)?'concert_round':/weinberg/.test(t)?'concert_vineyard':'concert_shoebox';
+ if(kind==='opera')return /fächer/.test(t)?'opera_fan':/oval/.test(t)?'opera_oval':/italienisch|rang/.test(t)?'opera_italian':'opera_horseshoe';
+ if(kind==='cathedral')return /kreuz/.test(t)?'church_cross':'cathedral';
+ return {castle:'castle',dwarf:'dwarf',cave:'cave',dungeon:'dungeon',forest:'forest',ice:'ice'}[kind]||'castle';
+}
+function scenePrompt(text){
+ const sh=effectiveTextShape(text); const geo=sh==='hexagon'?'Geometric requirement: EXACTLY SIX straight walls and six corners, hexagonal plan, no rectangular footprint.':sh==='octagon'?'Geometric requirement: EXACTLY EIGHT walls and eight corners, octagonal plan.':sh==='pentagon'?'Geometric requirement: EXACTLY FIVE walls and five corners, pentagonal plan.':sh==='triangle'?'Geometric requirement: EXACTLY THREE walls and three corners, triangular plan.':sh?'Geometric requirement: building floor plan is '+(SHAPE_NAMES[sh]||sh)+'.':'';
+ return `Photorealistic cinematic fantasy architecture environment, serious realistic feature film production design. ${text}. Wide 16:9 interior or environment establishing shot from a human eye-level viewpoint, architectural lines consistent and physically plausible, visible spatial depth and clear front/mid/background. Show relevant walls, ceiling or sky, floor, pillars and room contours to make a 3D acoustic approximation possible. Natural realistic materials with controlled color grading, atmospheric lighting. No people, no writing, no logos, no caption, no watermark. High detail, realistic perspective, no impossible geometry. ${geo}`;
+}
+function textNumericDimension(prompt,what){
+ const t=prompt.toLowerCase(); const p=what==='l'?'lang|lange|länge':what==='w'?'breit|breite':'hoch|höhe|hohe';
+ const a=t.match(new RegExp('(\\d{1,3})\\s*(?:m|meter)\\s*(?:'+p+')'));
+ const b=t.match(new RegExp('(?:'+p+')\\s*(?:von|:)?\\s*(\\d{1,3})\\s*(?:m|meter)'));
+ return a?+a[1]:b?+b[1]:null;
+}
+async function aiRoomFromGenerated(file,prompt){
+ await loadAndAnalyzeRoomImage(file);
+ const a=state.imageRecon;
+ if(!a)throw Error('Die Bild-zu-Raum-Analyse lieferte keine Daten.');
+ const desired=textScenePreset(prompt);
+ if(PRESETS[desired]){ a.preset=desired; a.kind=roomCategory(desired); a.label=roomLabel(a.kind); a.shape=PRESETS[desired].shape||a.shape; a.shapeLabel=SHAPE_NAMES[a.shape]||a.shape; }
+ const explicitShape=effectiveTextShape(prompt);if(explicitShape){a.shape=explicitShape;a.shapeLabel=SHAPE_NAMES[explicitShape]||explicitShape;}
+ for(const [key,range] of [['l',[6,160]],['w',[5,110]],['h',[3,75]]]){const n=textNumericDimension(prompt,key);if(n!==null)a[key]=clamp(n,range[0],range[1])}
+ if(explicitShape&&['hexagon','octagon','pentagon','triangle','round'].includes(explicitShape)){
+  const hasL=textNumericDimension(prompt,'l')!==null,hasW=textNumericDimension(prompt,'w')!==null;
+  if(!hasL&&!hasW)a.l=a.w;
+  if(hasL&&!hasW)a.w=a.l;
+  if(hasW&&!hasL)a.l=a.w;
+ }
+ a.source={x:a.w*.50,y:Math.min(a.h-0.4,2.1),z:a.l*.23}; a.mic={x:a.w*.5,y:Math.min(a.h-.4,3),z:a.l*.68};
+ applyImageReconstruction(a,true);drawImageAnalysisPreview(state._loadedImage,a);
+ return a;
+}
+async function aiGetServerInfo(){
+ const resp=await fetch('/api/status',{cache:'no-store'});
+ if(!resp.ok)throw Error('Lokaler Startserver nicht erreichbar.');
+ return await resp.json();
+}
+function aiProviderUpdate(){
+ const cloud=$('aiProvider').value==='openai';
+ $('aiOpenAIField').hidden=!cloud;
+ $('aiComfyField').hidden=cloud;
+ const tip=$('aiSetupHint');
+ if(tip)tip.innerHTML=cloud
+  ? 'OpenAI-Modus: <b>ComfyUI ist hier nicht erforderlich.</b> Einen separaten API-Schlüssel eingeben. Der Schlüssel wird erst beim Erzeugen gegen die API geprüft und nicht gespeichert.'
+  : 'Lokaler Modus: <b>ComfyUI und ein kompatibles Modell müssen installiert und gestartet sein.</b> Starte dafür KI_EINRICHTEN.bat aus dem Installationsordner.';
+ checkAIBridge();
+}
+async function aiGenerateScene(){
+ const text=$('fantasyPrompt').value.trim();
+ if(text.length<5){aiStatus('Beschreibe zuerst deinen Fantasy-Ort.',true);return}
+ const provider=$('aiProvider').value, model=provider==='openai' ? $('aiOpenAIModel').value : $('aiComfyModel').value;
+ const key=provider==='openai'?$('aiOpenAIKey').value.trim():'';
+ if(provider==='openai' && !key){aiStatus('Bitte deinen API-Schlüssel eingeben. ChatGPT Plus enthält keine API-Abrechnung.',true);return}
+ if(provider==='comfy'&&!model){aiStatus('Kein ComfyUI-Checkpoint ausgewählt. Bitte ComfyUI starten.',true);return}
+ const btn=$('aiGenerate');btn.disabled=true;aiStage(1);aiStatus('Bild-KI arbeitet – Architektur wird aus deiner Beschreibung erzeugt …');
+ try{
+   const r=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({provider,model,apiKey:key,prompt:scenePrompt(text)})});
+   const j=await r.json();
+   if(!r.ok)throw Error(j.error||'Die Bild-KI konnte das Bild nicht erzeugen.');
+   if(!j.b64_json)throw Error('Der KI-Dienst hat kein Bild geliefert.');
+   const binary=atob(j.b64_json),bytes=new Uint8Array(binary.length);
+   for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+   aiGeneratedBytes=bytes;aiScenePrompt=text;
+   aiGeneratedFile=new File([bytes],`RaumKlang_${textSceneKind(text)}_AI.png`,{type:'image/png'});
+   const url=URL.createObjectURL(aiGeneratedFile);
+   const img=$('aiResultImage');img.src=url;img.hidden=false;
+   state.generated=url;$('generatedPreview').src=url;$('generatedPreview').classList.add('visible');
+   $('aiSaveImage').disabled=false;$('aiApplyRoom').disabled=false;
+   if($('aiAutoRoom').checked){aiStage(2);aiStatus('KI-Bild erzeugt – analysiere Raumform und Oberflächen …');const a=await aiRoomFromGenerated(aiGeneratedFile,text);aiStatus(`Fertig: KI-Bild → ${a.label}, ${a.shapeLabel}, ${a.w} × ${a.l} × ${a.h} m. Raum und Hall können jetzt weiter bearbeitet werden.`)}
+   else {aiStage(1);aiStatus('KI-Bild ist fertig. Klicke auf „Raum aus Bild übernehmen“ für die akustische Raumableitung.')}
+ }catch(e){aiStatus('Bildgenerierung fehlgeschlagen: '+e.message,true)}
+ finally{btn.disabled=false}
+}
+async function aiApplyExisting(){if(!aiGeneratedFile)return;const b=$('aiApplyRoom');b.disabled=true;try{aiStage(2);const a=await aiRoomFromGenerated(aiGeneratedFile,aiScenePrompt);aiStatus(`Fertig: ${a.label} mit editierbarer Raumgeometrie ${a.w} × ${a.l} × ${a.h} m.`)}catch(e){aiStatus('Raumübernahme fehlgeschlagen: '+e.message,true)}finally{b.disabled=false}}
+async function initTextToImagePipeline(){
+ const box=$('aiSceneBuilder');if(!box)return;
+ $('aiProvider').onchange=aiProviderUpdate;$('aiOpenAIKey').addEventListener('input',()=>checkAIBridge());aiProviderUpdate();
+ $('aiGenerate').onclick=aiGenerateScene;
+ $('aiApplyRoom').onclick=aiApplyExisting;
+ $('aiSaveImage').onclick=()=>{if(aiGeneratedBytes)downloadBlob(new Blob([aiGeneratedBytes],{type:'image/png'}),'RaumKlang_AI_Fantasy_Raum.png')};
+ try{
+   const info=await aiGetServerInfo();
+   const select=$('aiComfyModel');select.innerHTML='';
+   for(const model of info.models||[]){const o=document.createElement('option');o.value=model;o.textContent=model;select.append(o)}
+   if(!info.models?.length){const o=document.createElement('option');o.value='';o.textContent='Kein kompatibles ComfyUI-Modell gefunden';select.append(o)}
+   // Anbieter niemals automatisch umschalten. Die Wahl des Nutzers ist maßgeblich.
+   aiProviderUpdate();
+   aiStatus(info.comfy && info.models?.length ? 'ComfyUI wurde erkannt. Bereit für lokale Bildgenerierung.' : 'Bitte einen Bild-KI-Anbieter einrichten: ComfyUI lokal oder OpenAI mit eigenem API-Schlüssel.');
+ }catch(e){aiStatus('Lokaler Bild-KI-Startserver nicht aktiv. Zum Generieren das vollständige Paket entpacken und RAUMKLANG_STARTEN.bat doppelklicken.',true)}
+}
+
+
+// v0.11 · Hallen als komplette, portable Projekte inklusive Bildern sichern.
+const HALL_KEYS=['preset','shape','w','l','h','walls','floor','ceiling','surfaceMix','color','source','mic','micAngle','damp','diffusion','wet','duration','format','yaw','pitch','zoom','orchestra','orchestraLayout','activeInstrument','customMic','customOrchestra'];
+const HALL_DB='RaumKlangAI-Hallen';
+const HALL_STORE='halls';
+let hallDb=null;
+function hallMessage(text,error=false){const el=$('hallLibraryStatus');if(el){el.textContent=text;el.style.color=error?'#ffb1a6':'#b5d9cf'} }
+function openHallDb(){return new Promise((resolve,reject)=>{if(!window.indexedDB){reject(Error('Der Browser unterstützt keine lokale Hallenbibliothek. Bitte Projekt exportieren.'));return}let req=indexedDB.open(HALL_DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(HALL_STORE))db.createObjectStore(HALL_STORE,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Hallenbibliothek nicht zugreifbar'))})}
+function hallTxn(mode,operation){return new Promise((resolve,reject)=>{let tx=hallDb.transaction(HALL_STORE,mode),st=tx.objectStore(HALL_STORE),req=operation(st);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Fehler bei der Hallenbibliothek'))})}
+async function toDataURL(src){if(!src||typeof src!=='string')return null;if(src.startsWith('data:image/'))return src;if(!/^(blob:|https?:)/.test(src))return null;const r=await fetch(src);if(!r.ok)throw Error('Bild konnte zum Speichern nicht gelesen werden.');const blob=await r.blob();if(blob.size>20_000_000)throw Error('Bild ist größer als 20 MB; bitte vorher komprimieren.');return await new Promise((ok,no)=>{const reader=new FileReader();reader.onload=()=>ok(reader.result);reader.onerror=()=>no(Error('Bild konnte nicht eingebettet werden.'));reader.readAsDataURL(blob)})}
+function projectImageURL(src){return typeof src==='string'&&/^data:image\/(png|jpe?g|webp);base64,/.test(src)&&src.length<50_000_000?src:null}
+async function captureHallProject(){
+ const imgSrc=state._loadedImage?.src||state.image||'';
+ const genSrc=state.generated||'';
+ const image=await toDataURL(imgSrc);
+ const generated=(genSrc===imgSrc&&image)?null:await toDataURL(genSrc);
+ const name=($('hallName')?.value||$('roomHeading').textContent||'Neue Halle').trim().slice(0,100)||'Meine Halle';
+ return {application:'RaumKlang AI',version:'0.11.3',format:'rkraum-v2',name,savedAt:new Date().toISOString(),settings:Object.fromEntries(HALL_KEYS.map(k=>[k,structuredClone(state[k])])),prompt:$('fantasyPrompt').value,scenePrompt:aiScenePrompt||'',images:{room:image,generated},reconstruction:state.imageRecon?structuredClone(state.imageRecon):null,roomHeading:$('roomHeading').textContent||''};
+}
+async function restoreHallProject(j){
+ if(j.application!=='RaumKlang AI'||!j.settings)throw Error('Keine gültige RaumKlang-Projektdatei');
+ const settings=j.settings;
+ for(const key of HALL_KEYS)if(settings[key]!==undefined)state[key]=settings[key];
+ state.shape=state.shape||PRESETS[state.preset]?.shape||'rect';state.orchestra=state.orchestra||buildOrchestra();
+ if(!settings.surfaceMix){state.surfaceMix=clone(MIX_PRESETS.default);for(const k of ['walls','floor','ceiling'])state.surfaceMix[k]=[[state[k],100],['stone',0]]}
+ state.customMic=state.customMic||[];state.customOrchestra=state.customOrchestra||[];
+ $('roomHeading').textContent=j.roomHeading||PRESETS[state.preset]?.title||'Gespeicherte Halle';
+ $('fantasyPrompt').value=j.prompt||'';
+ aiScenePrompt=j.scenePrompt||j.prompt||'';
+ $('hallName').value=j.name||'';
+ state.imageRecon=j.reconstruction||null;
+ state.imageFileName='';state.image=null;state.generated=null;state._loadedImage=null;
+ const source=projectImageURL(j.images?.room);
+ const generated=projectImageURL(j.images?.generated)||source;
+ const preview=$('uploadedPreview');preview.removeAttribute('src');preview.classList.remove('visible');
+ if(source){const im=new Image();im.src=source;await im.decode();state.image=source;state._loadedImage=im;preview.src=source;preview.classList.add('visible');$('imageStatus').textContent='Gespeichertes Bild wiederhergestellt.'}
+ const art=$('generatedPreview');art.removeAttribute('src');art.classList.remove('visible');
+ const aiArt=$('aiResultImage');if(aiArt){aiArt.hidden=true;aiArt.removeAttribute('src')}
+ if(generated){state.generated=generated;art.src=generated;art.classList.add('visible');if(aiArt){aiArt.src=generated;aiArt.hidden=false}}
+ aiGeneratedBytes=null;aiGeneratedFile=null;
+ if(generated){const resp=await fetch(generated);const blob=await resp.blob();aiGeneratedBytes=new Uint8Array(await blob.arrayBuffer());aiGeneratedFile=new File([blob],'RaumKlang_Gespeichertes_Bild.png',{type:blob.type||'image/png'});$('aiSaveImage').disabled=false;$('aiApplyRoom').disabled=false}else{$('aiSaveImage').disabled=true;$('aiApplyRoom').disabled=true}
+ if(source&&state.imageRecon)drawImageAnalysisPreview(state._loadedImage,state.imageRecon);
+ refreshOrchestraUI();refreshCustomPresetUI();syncControls();invalidate();
+ help('Halle einschließlich Bildern und Positionen geladen.');
+}
+async function refreshHallLibrary(){if(!hallDb)return;const list=await hallTxn('readonly',st=>st.getAllKeys());const select=$('savedHallList');const old=select.value;select.innerHTML='<option value="">Halle auswählen …</option>';const halls=[];for(const key of list){const o=await hallTxn('readonly',st=>st.get(key));if(o)halls.push(o)}halls.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));for(const h of halls){const option=document.createElement('option');option.value=h.id;option.textContent=`${h.name} · ${new Date(h.updatedAt).toLocaleDateString('de-DE')}`;select.appendChild(option)}if(halls.some(h=>h.id===old))select.value=old;}
+async function initHallLibrary(){
+ // Projekt exportieren und Projekt laden werden durch vollständige Bild-Pakete ersetzt.
+ $('saveProject').onclick=async()=>{try{const p=await captureHallProject();const blob=new Blob([JSON.stringify(p)],{type:'application/json'});downloadBlob(blob,`RaumKlang_${p.name.replace(/[^a-zäöüß0-9-_ ]/gi,'').replace(/\s+/g,'_')||'Halle'}.rkraum`);hallMessage('Projektdatei mit Bildern exportiert.')}catch(e){hallMessage(e.message,true);help('Export fehlgeschlagen: '+e.message,true)}};
+ $('loadProject').onchange=async e=>{try{const f=e.target.files?.[0];if(!f)return;if(f.size>50_000_000)throw Error('Projektdatei ist zu groß (max. 50 MB).');const j=JSON.parse(await f.text());await restoreHallProject(j);hallMessage('Projektdatei erfolgreich geladen.')}catch(err){hallMessage(err.message,true);help('Projekt konnte nicht geöffnet werden: '+err.message,true)}finally{e.target.value=''}};
+ try{hallDb=await openHallDb();await refreshHallLibrary()}catch(e){hallMessage(e.message,true)}
+ $('saveHallLocal').onclick=async()=>{try{if(!hallDb)throw Error('Lokale Bibliothek ist nicht verfügbar. Bitte Projekt exportieren.');const p=await captureHallProject();const id='hall-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);await hallTxn('readwrite',st=>st.put({id,name:p.name,updatedAt:p.savedAt,data:p}));await refreshHallLibrary();$('savedHallList').value=id;hallMessage(`„${p.name}“ wurde vollständig gespeichert – inklusive Bild.`)}catch(e){hallMessage('Speichern fehlgeschlagen: '+e.message,true)}};
+ $('loadHallLocal').onclick=async()=>{try{const id=$('savedHallList').value;if(!id)throw Error('Bitte zuerst eine Halle auswählen.');const record=await hallTxn('readonly',st=>st.get(id));if(!record)throw Error('Halle nicht gefunden.');await restoreHallProject(record.data);hallMessage(`Halle „${record.name}“ geladen.`)}catch(e){hallMessage('Laden fehlgeschlagen: '+e.message,true)}};
+ $('deleteHallLocal').onclick=async()=>{try{const id=$('savedHallList').value;if(!id)throw Error('Bitte zuerst eine Halle auswählen.');const opt=$('savedHallList').selectedOptions[0]?.textContent||'Halle';if(!confirm(`„${opt}“ wirklich aus der lokalen Bibliothek löschen?`))return;await hallTxn('readwrite',st=>st.delete(id));await refreshHallLibrary();hallMessage('Halle aus lokaler Bibliothek entfernt.')}catch(e){hallMessage(e.message,true)}};
+}
+function aiNetworkMessage(message,error=false){const el=$('aiNetworkStatus');if(el){el.textContent=message;el.classList.toggle('bad',error)}}
+async function checkAIBridge(){
+ if(location.protocol==='file:'){aiNetworkMessage('HTML-Datei direkt geöffnet. Bitte RAUMKLANG_STARTEN.bat benutzen.',true);return false}
+ try{
+  const info=await aiGetServerInfo(); if(!info.server)throw Error('Unerwarteter Server');
+  if($('aiProvider').value==='comfy'){
+     const sel=$('aiComfyModel'); if(sel){const current=sel.value; sel.innerHTML='';for(const model of info.models||[]){const opt=document.createElement('option');opt.value=model;opt.textContent=model;sel.append(opt)}if(!info.models?.length){const opt=document.createElement('option');opt.value='';opt.textContent='Noch kein ComfyUI-Bildmodell gefunden';sel.append(opt)}else if([...sel.options].some(o=>o.value===current))sel.value=current;}
+   }
+   if($('aiProvider').value==='openai'){
+   const key=$('aiOpenAIKey').value.trim();
+   aiNetworkMessage(key ? 'RaumKlang-Server bereit. OpenAI-Schlüssel eingegeben; Gültigkeit wird bei der ersten Bildgenerierung geprüft.' : 'RaumKlang-Server bereit. Für OpenAI bitte einen eigenen API-Schlüssel eingeben (zusätzliche API-Kosten).',!key);
+  }else{
+   const healthy=info.comfy && (info.models||[]).length>0;
+   aiNetworkMessage(healthy ? `ComfyUI bereit: ${info.models.length} kompatible(s) Modell(e) erkannt.` : info.comfy ? 'ComfyUI ist gestartet, aber es wurde kein geeignetes Bildmodell erkannt. KI_EINRICHTEN.bat ausführen.' : 'RaumKlang läuft. Die lokale Bild-KI (ComfyUI) fehlt oder ist noch nicht gestartet. KI_EINRICHTEN.bat ausführen.',!healthy);
+  }
+  return true;
+ }catch(e){aiNetworkMessage('RaumKlang-Server nicht erreichbar. RAUMKLANG_STARTEN.bat ausführen.',true);return false}
+}
+// initialize
+initNewControls();bindEvents();setPreset('concert_vineyard');renderWave();initLayoutV05();initImageRoomReconstruction();
+$('fantasyPrompt').addEventListener('input',updateTextShapeRecognition);$('textShapeChoice').addEventListener('change',updateTextShapeRecognition);updateTextShapeRecognition();
+// UI v0.5: faithful compact arrangement; original audio controls/IDs remain untouched.
+function roomCategory(preset){
+ if(preset.startsWith('concert_'))return 'concert';
+ if(preset.startsWith('opera_'))return 'opera';
+ if(preset.startsWith('church_')||preset==='cathedral')return 'cathedral';
+ for(const cat of ['castle','dwarf','cave','dungeon','forest','ice'])if(preset===cat||preset.startsWith(cat+'_'))return cat;
+ return 'cathedral';
+}
+function syncRoomList(){
+ const group=roomCategory(state.preset);
+ document.querySelectorAll('.roomChoice').forEach(btn=>btn.classList.toggle('selected',btn.dataset.category===group));
+ for(const el of document.querySelectorAll('#shapeGroups>.shapeGrid'))el.hidden=el.id!==group+'Shapes';
+ const names={concert:'Konzertsaal',opera:'Opernhaus',cathedral:'Kirche / Kathedrale',castle:'Burg / Schloss',dwarf:'Zwergenhalle',cave:'Höhle / Grotte',dungeon:'Dungeon',forest:'Waldlichtung',ice:'Eishöhle'};
+ const title=document.getElementById('formTitle');if(title)title.textContent='Grundform · '+names[group];
+ const note=document.getElementById('formNote');if(note)note.hidden=true;
+ document.querySelectorAll('.shapeOption').forEach(b=>b.classList.toggle('selected',b.dataset.preset===state.preset));
+}
+function drawOrchestraMini(){
+  const canvas=document.getElementById('orchestraPreview');if(!canvas)return;
+  const {c,w,h}=fitCanvas(canvas);c.clearRect(0,0,w,h);
+  c.fillStyle='#0a121b';c.fillRect(0,0,w,h);
+  for(let i=0;i<7;i++){const y=h*.19+(i/6)*h*.67;
+    c.beginPath();c.ellipse(w*.5,y,w*(.18+i*.045),h*(.05+i*.005),0,Math.PI,2*Math.PI);
+    c.strokeStyle='rgba(220,166,99,.12)';c.lineWidth=1.5;c.stroke();}
+  const points=Object.entries(state.orchestra||{});
+  for(const [id,p] of points){
+    if(!p)continue;
+    const group=typeof INSTR_GROUP!=='undefined'?INSTR_GROUP[id]:'';
+    const color=INSTR_COLORS[group]||'#e8c68b';
+    const x=w*.15+(p.x/state.w)*w*.7;
+    const y=h*.14+(p.z/state.l)*h*.77;
+    c.beginPath();c.arc(x,y,id===state.activeInstrument?5:3.5,0,Math.PI*2);
+    c.fillStyle=color;c.fill();
+    if(id===state.activeInstrument){c.strokeStyle='#fff2cc';c.lineWidth=2;c.stroke()}
+  }
+  c.fillStyle='#d8b785';c.font='bold '+Math.round(Math.max(9,w/50))+'px Segoe UI';c.textAlign='center';c.fillText('DIRIGENT',w*.5,h*.94);
+}
+function initLayoutV05(){
+  syncRoomList();
+  const chooser=document.getElementById('themeSelect');
+  const saved=(()=>{try{return localStorage.getItem('raumklang_theme_v05')}catch(e){return null}})();
+  const valid=['gold','blue','teal','violet','copper','emerald','rose','iceblue','silver'];
+  if(chooser){chooser.value=valid.includes(saved)?saved:'gold';document.documentElement.dataset.theme=chooser.value;
+    chooser.addEventListener('change',()=>{document.documentElement.dataset.theme=chooser.value;try{localStorage.setItem('raumklang_theme_v05',chooser.value)}catch(e){}})}
+  const note=document.getElementById('hintTab');
+  document.querySelectorAll('[data-tab]').forEach(t=>t.addEventListener('click',()=>{if(note)note.textContent=t.dataset.tab==='presets'?'Wähle links eine Raumkategorie und darunter eine von vier Grundformen.':t.dataset.tab==='upload'?'Lade ein Bild und leite daraus automatisch einen Raumvorschlag ab.':'Textidee erzeugt derzeit einen regelbasierten Raum.'}));
+  // Expand secondary rows only when needed, with all original controls present and usable.
+  window.addEventListener('resize',drawOrchestraMini);document.querySelectorAll('.exportCard .extra').forEach(d=>d.addEventListener('toggle',()=>{if(d.open)renderWave()}));
+  drawOrchestraMini();
+}
+
+initHallLibrary();
+
+</script></body></html>
