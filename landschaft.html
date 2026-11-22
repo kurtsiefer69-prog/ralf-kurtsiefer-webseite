@@ -128,7 +128,7 @@ h2{font-size:22px;font-weight:400;margin:4px 0 0;letter-spacing:.02em}
 <div class="fx-label"><div class="section-kicker">Separat abspielbar</div><h3>Soundeffekte</h3><span>Per Klick zusätzlich zur Musik</span></div>
 <div class="fx-buttons" id="fxButtons"></div>
 </div>
-<div class="helper"><span><span class="highlight">Musikdateien:</span> Die Tavernen-Audios dienen vorübergehend als Teststück. Das Landschaftsstück folgt später.</span><span><span class="highlight">Wichtig:</span> Stop, Solo und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
+<div class="helper"><span><span class="highlight">Musikdateien:</span> Fünf eigenständige Landschaft-Spuren sind hinterlegt. Eine Flötenspur ist derzeit nicht vorhanden.</span><span><span class="highlight">Wichtig:</span> Stop, Solo und Stumm unterbrechen nicht die gemeinsame Zeitachse.</span></div>
 </main>
 <footer class="music-links" aria-label="Ralf Kurtsiefer auf Musikplattformen">
 <span class="music-links-label">Mehr Musik entdecken</span>
@@ -150,7 +150,7 @@ const trackData=[
  {id:'drums',category:'Drums',title:'Trommeln & Rhythmus',symbol:'◉',volume:75,src:''},
  {id:'gitarre',category:'Gitarre',title:'Laute & Gitarre',symbol:'♬',volume:75,src:''},
  {id:'floeten',category:'Flöten',title:'Flötenmelodie',symbol:'♪',volume:75,src:''},
- {id:'vocals',category:'Vocals',title:'Gesang & Chor',symbol:'♫',volume:75,src:''},
+ {id:'vocals',category:'Chor',title:'Chor',symbol:'♫',volume:75,src:''},
  {id:'choir',category:'Choir',title:'Chor',symbol:'♛',volume:75,src:''},
  {id:'sonstiges',category:'Sonstiges',title:'Weitere Instrumente',symbol:'✦',volume:75,src:''},
 ];
@@ -161,17 +161,17 @@ const effects=[
  {id:'bach',title:'Bach',symbol:'≈',src:''},
  {id:'bauernhof',title:'Bauernhof',symbol:'♧',src:''}
 ];
-// Landschaft: vorläufige sieben Test-OGG-Dateien auf sechs Kanälen. Chor und Vocals werden gemeinsam geregelt.
-// Jede Kategorie erhält pro Stück einen eigenen Dateipfad; die Effekte darunter sind global.
+// Landschaft: fünf eigenständige OGG-Spuren; alle Dateinamen entsprechen exakt dem GitHub-Ordner audio.
+// Die Chor-Audiodatei wird über die gemeinsame sichtbare Vocals/Chor-Zeile geregelt.
 const songCatalog=[
- {id:'landschaft-test',name:'Landschaft · Teststück (Taverne)',tracks:{
-  atmo:{src:'audio/Atmo.ogg'},
-  drums:{src:'audio/Drums.ogg'},
-  gitarre:{src:'audio/Gitarre.ogg'},
-  floeten:{src:'audio/Flöte.ogg'},
-  vocals:{src:'audio/Vocals.ogg'},
-  choir:{src:'audio/Choir.ogg'},
-  sonstiges:{src:'audio/Sonstiges.ogg'}
+ {id:'landschaft-1',name:'Landschaft · Musikstück 1',tracks:{
+  atmo:{src:'audio/lANDSCHAFT nATURGERÄUSCHE.ogg',title:'Naturgeräusche'},
+  drums:{src:'audio/lANDSCHAFT Trommel.ogg',title:'Trommel'},
+  gitarre:{src:'audio/lANDSCHAFT Gitarre.ogg',title:'Gitarre'},
+  floeten:{src:'',title:'Noch keine Flötenspur'},
+  vocals:{src:'',title:'Chor'},
+  choir:{src:'audio/lANDSCHAFT Chor.ogg',title:'Chor'},
+  sonstiges:{src:'audio/lANDSCHAFT Weitere instrumente.ogg',title:'Weitere Instrumente'}
  }}
 ];
 let songRevision=0;
