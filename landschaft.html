@@ -176,7 +176,7 @@ const songCatalog=[
 ];
 let songRevision=0;
 const songSelect=document.getElementById('songSelect');
-const tracks=trackData.map(x=>({...x,baseTitle:x.title,baseVolume:x.volume,enabled:true,muted:!['atmo','gitarre'].includes(x.id),solo:false,loop:true,buffer:null,source:null,gain:null,analyser:null,meterData:null,loading:null}));
+const tracks=trackData.map(x=>({...x,baseTitle:x.title,baseVolume:x.volume,enabled:true,muted:!['atmo','sonstiges'].includes(x.id),solo:false,loop:true,buffer:null,source:null,gain:null,analyser:null,meterData:null,loading:null}));
 const fx=effects.map(x=>({...x,buffer:null}));
 const trackList=document.getElementById('trackList');
 const fxButtons=document.getElementById('fxButtons');
@@ -227,7 +227,7 @@ function chooseSong(id){
     t.filename=null;
     t.buffer=null;
     t.loading=null;
-    t.enabled=true;t.muted=!['atmo','gitarre'].includes(t.id);t.solo=false;t.loop=true;
+    t.enabled=true;t.muted=!['atmo','sonstiges'].includes(t.id);t.solo=false;t.loop=true;
   }
   songSelect.value=song.id;
   renderTracks();
